@@ -16,7 +16,6 @@ buildscript {
 }
 
 plugins {
-    id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
     id "java"
     id "maven-publish"
     id "idea"
@@ -28,8 +27,7 @@ plugins {
     id "org.liquibase.gradle"
     id "org.sonarqube"
     id "io.spring.nohttp"
-    //id "com.palantir.graal" version "0.6.0-114-gfe95739"
-    //id "org.mikeneck.graalvm-native-image" version "0.3.0"
+    id "com.palantir.graal" version "0.6.0-112-gca0b727"
     //jhipster-needle-gradle-plugins - JHipster will add additional gradle plugins here
 }
 
@@ -50,7 +48,7 @@ apply plugin: 'war'
 apply plugin: 'propdeps'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'eclipse'
-//apply plugin: 'com.palantir.graal'
+apply plugin: 'com.palantir.graal'
 //jhipster-needle-gradle-apply-from - JHipster will add additional gradle scripts to be applied here
 
 
@@ -85,6 +83,9 @@ if (project.hasProperty("gae")) {
     appengineStage.dependsOn thinResolve
 }
 
+if (project.hasProperty("zipkin")) {
+    apply from: "gradle/zipkin.gradle"
+}
 
 idea {
     module {
@@ -108,24 +109,10 @@ springBoot {
     mainClassName = 'org.assimbly.gateway.GatewayApp'
 }
 
-/*
-
-//https://github.com/palantir/gradle-graal (com.palantir.graal)
-nativeImage {
-    setGraalVmHome("C:\\graalvm8")
-    setMainClass("org.assimbly.gateway.GatewayApp")
-    setExecutableName("assimbly")
-}
-*/
-
-
-/*
-//https://github.com/mike-neck/graalvm-native-image-plugin
 graal {
       mainClass 'org.assimbly.gateway.GatewayApp'
       outputName 'assimbly'
 }
-*/
 
 test {
     useJUnitPlatform()
@@ -242,15 +229,16 @@ dependencies {
     // Use ", version: jhipster_dependencies_version, changing: true" if you want
     // to use a SNAPSHOT release instead of a stable release
     implementation group: "io.github.jhipster", name: "jhipster-framework"
+    implementation "javax.annotation:javax.annotation-api"
     implementation "org.springframework.boot:spring-boot-starter-cache"
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.micrometer:micrometer-registry-prometheus"
     // compile "io.dropwizard.metrics:metrics-jcache"
-    implementation "io.dropwizard.metrics:metrics-json"
-    implementation "io.dropwizard.metrics:metrics-jvm"
-    implementation "io.dropwizard.metrics:metrics-servlet"
-    implementation "io.dropwizard.metrics:metrics-servlets"
-    implementation "io.prometheus:simpleclient"
+    // implementation "io.dropwizard.metrics:metrics-json"
+    // implementation "io.dropwizard.metrics:metrics-jvm"
+    // implementation "io.dropwizard.metrics:metrics-servlet"
+    // implementation "io.dropwizard.metrics:metrics-servlets"
+    // implementation "io.prometheus:simpleclient"
     // compile "io.prometheus:simpleclient_dropwizard"
     // compile "io.prometheus:simpleclient_servlet"
     implementation "net.logstash.logback:logstash-logback-encoder"
@@ -260,11 +248,12 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
-    implementation group: 'io.dropwizard.metrics', name: 'metrics-annotation', version: '4.1.2'
+    // implementation group: 'io.dropwizard.metrics', name: 'metrics-annotation', version: '4.1.2'
     // compile "com.ryantenney.metrics:metrics-spring"
     implementation "javax.cache:cache-api"
     implementation "org.hibernate:hibernate-core"
     implementation "com.zaxxer:HikariCP"
+    implementation "commons-codec:commons-codec"
     implementation "org.apache.commons:commons-lang3"
     implementation "commons-io:commons-io"
     implementation "javax.transaction:javax.transaction-api"
@@ -291,7 +280,17 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-undertow"
     implementation "org.springframework.boot:spring-boot-starter-websocket"
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
-    implementation "org.zalando:problem-spring-web:0.24.0-RC.0"
+    implementation "org.zalando:problem-spring-web"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-zuul"
+    implementation "com.github.vladimir-bukhtoyarov:bucket4j-core"
+    implementation "com.github.vladimir-bukhtoyarov:bucket4j-jcache"
+    implementation "org.springframework.cloud:spring-cloud-starter"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-ribbon"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-hystrix"
+    implementation "org.springframework.retry:spring-retry"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+    implementation "org.springframework.cloud:spring-cloud-starter-config"
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
     implementation "org.springframework.boot:spring-boot-starter-cloud-connectors"
     implementation "org.springframework.cloud:spring-cloud-spring-service-connector"
     implementation "org.springframework:spring-context-support"
@@ -300,7 +299,14 @@ dependencies {
     implementation "org.springframework.security:spring-security-data"
     implementation "org.springframework.security:spring-security-web"
     implementation "org.springframework.security:spring-security-messaging"
-    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation "io.jsonwebtoken:jjwt-api"
+    if (!project.hasProperty("gae")) {
+        runtimeOnly "io.jsonwebtoken:jjwt-impl"
+        runtimeOnly "io.jsonwebtoken:jjwt-jackson"
+    } else {
+        implementation "io.jsonwebtoken:jjwt-impl"
+        implementation "io.jsonwebtoken:jjwt-jackson"
+    }
     implementation ("io.springfox:springfox-swagger2") {
         exclude module: 'mapstruct'
     }
@@ -310,7 +316,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
 
 	// custom dependencies (non-jhipster)
-    implementation group: "org.assimbly", name: "connector", version: "3.0.0", changing: true    
+    implementation group: "org.assimbly", name: "connector", version: "1.1.0", changing: true    
 	implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.10.3"
 	implementation "org.jdom:jdom2:2.0.6"
 	//implementation "io.hawt:hawtio-springboot:2.9.1"
@@ -332,20 +338,16 @@ dependencies {
     
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernate_version}"
-    annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor") {
-        exclude group: 'com.vaadin.external.google', module: 'android-json'
-    }
-    testImplementation "com.jayway.jsonpath:json-path"
+    annotationProcessor "org.glassfish.jaxb:jaxb-runtime:${jaxb_runtime_version}"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}"
     testImplementation ("org.springframework.boot:spring-boot-starter-test") {
-        exclude group: 'com.vaadin.external.google', module: 'android-json'
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
+	testImplementation "com.jayway.jsonpath:json-path"
     testImplementation "org.springframework.security:spring-security-test"
     testImplementation "org.springframework.boot:spring-boot-test"
-    testImplementation "org.assertj:assertj-core"
-    testImplementation "junit:junit"
-    testImplementation "org.mockito:mockito-core"
-    testImplementation "com.mattbertolini:liquibase-slf4j"
-    testImplementation "org.hamcrest:hamcrest-library"
+    testImplementation "com.tngtech.archunit:archunit-junit5-api:${archunit_junit5_version}"
+    testRuntimeOnly "com.tngtech.archunit:archunit-junit5-engine:${archunit_junit5_version}"
     testImplementation "com.h2database:h2"
     liquibaseRuntime "com.h2database:h2"
     //jhipster-needle-gradle-dependency - JHipster will add additional dependencies here

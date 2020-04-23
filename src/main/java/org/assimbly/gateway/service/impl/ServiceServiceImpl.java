@@ -44,7 +44,6 @@ public class ServiceServiceImpl implements ServiceService {
     @Override
     public ServiceDTO save(ServiceDTO serviceDTO) {
         log.debug("Request to save Service : {}", serviceDTO);
-
         org.assimbly.gateway.domain.Service service = serviceMapper.toEntity(serviceDTO);
         service = serviceRepository.save(service);
         return serviceMapper.toDto(service);

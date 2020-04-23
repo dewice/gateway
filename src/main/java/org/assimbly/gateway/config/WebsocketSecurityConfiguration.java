@@ -1,7 +1,6 @@
 package org.assimbly.gateway.config;
 
 import org.assimbly.gateway.security.AuthoritiesConstants;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
@@ -24,5 +23,13 @@ public class WebsocketSecurityConfiguration extends AbstractSecurityWebSocketMes
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).denyAll()
             // catch all
             .anyMessage().denyAll();
+    }
+
+    /**
+     * Disables CSRF for Websockets.
+     */
+    @Override
+    protected boolean sameOriginDisabled() {
+        return true;
     }
 }

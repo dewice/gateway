@@ -7,11 +7,13 @@ import { NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 import { NgxWebstorageModule } from 'ngx-webstorage';
 import { PopoverModule } from 'ngx-bootstrap';
 import { NgJhipsterModule } from 'ng-jhipster';
+import { CookieModule } from 'ngx-cookie';
 
 import { AuthExpiredInterceptor } from './blocks/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './blocks/interceptor/errorhandler.interceptor';
 import { NotificationInterceptor } from './blocks/interceptor/notification.interceptor';
 import { GatewaySharedModule } from '../app/shared';
+import { AuthInterceptor } from 'app/blocks/interceptor/auth.interceptor';
 import { GatewayCoreModule } from '../app/core';
 import { GatewayAppRoutingModule } from './app-routing.module';
 import { GatewayHomeModule } from './home/home.module';
@@ -29,6 +31,7 @@ import { JhiMainComponent, NavbarComponent, FooterComponent, PageRibbonComponent
         BrowserModule,
         GatewayAppRoutingModule,
         HttpClientModule,
+        CookieModule.forRoot(),
         NgxWebstorageModule.forRoot({ prefix: 'jhi', separator: '-' }),
         NgJhipsterModule.forRoot({
             // set below to true to make alerts look like toast
@@ -48,6 +51,11 @@ import { JhiMainComponent, NavbarComponent, FooterComponent, PageRibbonComponent
     declarations: [JhiMainComponent, NavbarComponent, ErrorComponent, PageRibbonComponent, FooterComponent],
     providers: [
         HttpClientModule,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true
+        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthExpiredInterceptor,

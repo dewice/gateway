@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, Observer, Subscription } from 'rxjs';
+import { Observable, Observer, Subscription, ReplaySubject, Subject } from 'rxjs';
+import { Location } from '@angular/common';
 
 import { SERVER_API_URL } from 'app/app.constants';
 import { createRequestOption } from 'app/shared';
@@ -16,6 +17,8 @@ import * as Stomp from 'webstomp-client';
 import { tap } from 'rxjs/operators';
 import { CSRFService } from 'app/core';
 
+import { AuthServerProvider } from 'app/core/auth/auth-jwt.service';
+
 type EntityResponseType = HttpResponse<IFlow>;
 type EntityArrayResponseType = HttpResponse<IFlow[]>;
 
@@ -24,6 +27,12 @@ export class FlowService {
     public resourceUrl = SERVER_API_URL + 'api/flows';
     public connectorUrl = SERVER_API_URL + 'api/connector';
     public environmentUrl = SERVER_API_URL + 'api/environment';
+
+    private routerSubscription: Subscription | null = null;
+    private connectionSubject: ReplaySubject<void> = new ReplaySubject(1);
+    private connectionSubscription: Subscription | null = null;
+    private stompSubscription: Stomp.Subscription | null = null;
+    private listenerSubject: Subject<Flow> = new Subject();
 
     stompClient = null;
     subscriber = null;
@@ -36,7 +45,14 @@ export class FlowService {
 
     private gatewayid = 1;
 
-    constructor(protected http: HttpClient, protected router: Router, protected $window: WindowRef, protected csrfService: CSRFService) {
+    constructor(
+        protected http: HttpClient,
+        protected router: Router,
+        protected $window: WindowRef,
+        private authServerProvider: AuthServerProvider,
+        protected csrfService: CSRFService,
+        private location: Location
+    ) {
         this.connection = this.createConnection();
         this.listener = this.createListener();
     }
@@ -209,14 +225,13 @@ export class FlowService {
             );
     }
 
-    connect() {
+    connect(): void {
         if (this.connectedPromise === null) {
             this.connection = this.createConnection();
         }
 
-        // building absolute path so that websocket doesn't fail when deploying with a context path
+        //     // building absolute path so that websocket doesn't fail when deploying with a context path
         const loc = this.$window.nativeWindow.location;
-
         let url;
 
         if (loc.host === 'localhost:9000') {
@@ -225,20 +240,17 @@ export class FlowService {
         } else {
             url = '//' + loc.host + loc.pathname + 'websocket/alert';
         }
-
-        const socket = new SockJS(url);
+        const authToken = this.authServerProvider.getToken();
+        if (authToken) {
+            url += '?access_token=' + authToken;
+        }
+        const socket: WebSocket = new SockJS(url);
         this.stompClient = Stomp.over(socket);
-
-        const headers = {};
-        headers['X-XSRF-TOKEN'] = this.csrfService.getCSRF('XSRF-TOKEN');
-
-        this.stompClient.connect(
-            headers,
-            () => {
-                this.connectedPromise('success');
-                this.connectedPromise = null;
-            }
-        );
+        const headers: Stomp.ConnectionHeaders = {};
+        this.stompClient.connect(headers, () => {
+            this.connectedPromise('success');
+            this.connectedPromise = null;
+        });
     }
 
     disconnect() {

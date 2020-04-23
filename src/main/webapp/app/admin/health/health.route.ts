@@ -6,6 +6,6 @@ export const healthRoute: Route = {
     path: 'jhi-health',
     component: HealthComponent,
     data: {
-        pageTitle: 'health.title'
+        pageTitle: 'Health Checks'
     }
 };

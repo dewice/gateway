@@ -5,9 +5,6 @@ import org.assimbly.gateway.config.Constants;
 import org.assimbly.gateway.domain.Authority;
 import org.assimbly.gateway.domain.User;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-
 import javax.validation.constraints.*;
 import java.time.Instant;
 import java.util.Set;
@@ -40,7 +37,7 @@ public class UserDTO {
 
     private boolean activated = false;
 
-    @Size(min = 2, max = 6)
+    @Size(min = 2, max = 10)
     private String langKey;
 
     private String createdBy;

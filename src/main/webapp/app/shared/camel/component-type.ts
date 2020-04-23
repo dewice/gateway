@@ -574,19 +574,6 @@ export const typesLinks = [
     `
     },
     {
-        name: 'LDAP',
-        assimblyTypeLink: `/component-ldap`,
-        camelTypeLink: `/ldap-component.html`,
-        uriPlaceholder: 'ldap.example.com:port',
-        uriPopoverMessage: `
-        <b>Name</b>: host <br/>
-        <b>Description</b>: The LDAP uri <br/>
-        <b>Required</b>: yes <br/>
-        <b>Data Type</b>: String <br/><br/>
-        <b>Example</b>: example.com:389 <br/>
-    `
-    },
-    {
         name: 'NETTY4',
         assimblyTypeLink: `/component-netty4`,
         camelTypeLink: `/netty-component.html`,
@@ -1000,7 +987,6 @@ export class Components {
 
     toTypes = [
         'ACTIVEMQ',
-        'LDAP',
         'AS2',
         'AWS-S3',
         'DIRECT',
