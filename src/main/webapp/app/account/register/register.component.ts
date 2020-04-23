@@ -4,7 +4,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 
 import { EMAIL_ALREADY_USED_TYPE, LOGIN_ALREADY_USED_TYPE } from 'app/shared/constants/error.constants';
 import { LoginModalService } from 'app/core/login/login-modal.service';
-import { Register } from './register.service';
+import { RegisterService } from './register.service';
 
 @Component({
     selector: 'jhi-register',
@@ -29,7 +29,7 @@ export class RegisterComponent implements AfterViewInit {
 
     constructor(
         private loginModalService: LoginModalService,
-        private registerService: Register,
+        private registerService: RegisterService,
         private renderer: Renderer,
         private fb: FormBuilder
     ) {}
