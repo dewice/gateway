@@ -1,3 +1,4 @@
+
 pluginManagement {
      plugins {
           id 'org.springframework.boot' version "${spring_boot_version}"
@@ -13,4 +14,4 @@ pluginManagement {
      }
 }
 
-rootProject.name = 'gateway'
+rootProject.name = "gateway"

@@ -13,7 +13,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Component;
 
 // This class listens to failure events in camel exchanges (routes) and send them to the websocket topic: topic/alert
-// Check the following page for all EventObject instances of Camel: http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/management/event/package-summary.html
+// Check the following page for all EventObject instances of Camel: https://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/management/event/package-summary.html
 
 @Component
 public class FailureListener extends EventNotifierSupport {

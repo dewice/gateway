@@ -8,9 +8,6 @@ buildscript {
         maven { url "https://repo.spring.io/plugins-release" }
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}"
-        classpath "io.spring.gradle:propdeps-plugin:0.0.10.RELEASE"
-        classpath "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.2.1"
         //jhipster-needle-gradle-buildscript-dependency - JHipster will add additional gradle build script plugins here
     }
 }
@@ -24,6 +21,9 @@ plugins {
     id "com.google.cloud.tools.jib"
     id "com.gorylenko.gradle-git-properties"
     id "com.github.node-gradle.node"
+    id "net.ltgt.apt-eclipse"
+    id "net.ltgt.apt-idea"
+    id "net.ltgt.apt"
     id "org.liquibase.gradle"
     id "org.sonarqube"
     id "io.spring.nohttp"
@@ -42,16 +42,8 @@ assert System.properties["java.specification.version"] == "1.8" || "11" || "12" 
 
 apply from: "gradle/docker.gradle"
 apply from: "gradle/sonar.gradle"
-apply plugin: 'maven-publish'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'java'
-apply plugin: 'propdeps'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'eclipse'
 apply plugin: 'com.palantir.graal'
 //jhipster-needle-gradle-apply-from - JHipster will add additional gradle scripts to be applied here
-
-
 
 configurations.all {
   exclude module: 'log4j-slf4j-impl' 	
@@ -233,14 +225,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-cache"
     implementation "io.dropwizard.metrics:metrics-core"
     implementation "io.micrometer:micrometer-registry-prometheus"
-    // compile "io.dropwizard.metrics:metrics-jcache"
-    // implementation "io.dropwizard.metrics:metrics-json"
-    // implementation "io.dropwizard.metrics:metrics-jvm"
-    // implementation "io.dropwizard.metrics:metrics-servlet"
-    // implementation "io.dropwizard.metrics:metrics-servlets"
-    // implementation "io.prometheus:simpleclient"
-    // compile "io.prometheus:simpleclient_dropwizard"
-    // compile "io.prometheus:simpleclient_servlet"
     implementation "net.logstash.logback:logstash-logback-encoder"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
@@ -248,8 +232,6 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.module:jackson-module-afterburner"
-    // implementation group: 'io.dropwizard.metrics', name: 'metrics-annotation', version: '4.1.2'
-    // compile "com.ryantenney.metrics:metrics-spring"
     implementation "javax.cache:cache-api"
     implementation "org.hibernate:hibernate-core"
     implementation "com.zaxxer:HikariCP"
@@ -263,7 +245,6 @@ dependencies {
     implementation "org.hibernate:hibernate-envers"
     implementation "org.hibernate.validator:hibernate-validator"
     implementation "org.liquibase:liquibase-core"
-    // compile "com.mattbertolini:liquibase-slf4j"
     liquibaseRuntime "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:${liquibase_hibernate5_version}"
     liquibaseRuntime sourceSets.main.compileClasspath
@@ -370,7 +351,7 @@ task cleanResources(type: Delete) {
 }
 
 wrapper {
-    gradleVersion = "6.2.2"
+    gradleVersion = "6.1"
 }
 
 
