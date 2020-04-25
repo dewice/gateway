@@ -9,6 +9,8 @@ export interface IFlow {
     redeliveryDelay?: number;
     type?: string;
     distributed?: boolean;
+    loadBalancing?: boolean;
+    deployment_id?: String;
     instances?: number;
     logLevel?: LogLevelType;
     gatewayId?: number;
@@ -27,6 +29,8 @@ export class Flow implements IFlow {
         public redeliveryDelay?: number,
         public type?: string,
         public distributed?: boolean,
+        public loadBalancing?: boolean,
+        public deployment_id?: String,
         public instances?: number,
         public logLevel?: LogLevelType,
         public gatewayId?: number,

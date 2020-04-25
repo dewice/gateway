@@ -110,11 +110,18 @@
 						</div>
 						<div class="form-group w-25">
 							<label class="form-control-label" for="field_distributed">Distributed</label>
-							<select type="text" class="form-control" id="field_distributed" *ngIf="flow" formControlName="distributed" [(value)]="distributed">
-								<option value="true">true</option>
-								<option value="false">false</option>
+							<select type="text" class="form-control" id="field_distributed" *ngIf="flow" formControlName="distributed" [(ngModel)]="flow.distributed">
+								<option [ngValue]="true">true</option>
+								<option [ngValue]="false">false</option>
 							</select>
-						</div> 					
+						</div>
+						<div *ngIf="flow.distributed == true" class="form-group w-25">
+							<label class="form-control-label" for="field_loadBalancing">LoadBalancing</label>
+							<select type="text" class="form-control" id="field_loadBalancing" *ngIf="flow" formControlName="loadBalancing" [(ngModel)]="flow.loadBalancing">
+								<option [ngValue]="true">true</option>
+								<option [ngValue]="false">false</option>
+							</select>
+						</div>
 						<div class="form-group" *ngIf="!singleGateway">
 							<label class="form-control-label" for="field_gateway">Gateway</label>
 							<select class="form-control" id="field_gateway" *ngIf="flow" formControlName="gateway">

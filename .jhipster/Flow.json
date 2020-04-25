@@ -69,6 +69,14 @@
             "fieldName": "logLevel",
             "fieldType": "LogLevelType",
             "fieldValues": "ERROR,WARN,INFO,DEBUG,TRACE,OFF"
+        },
+        {
+            "fieldName": "distributed",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "deployment_id",
+            "fieldType": "String"
         }
     ],
     "changelogDate": "20180114132915",

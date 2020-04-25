@@ -9,7 +9,7 @@ import org.assimbly.gateway.domain.ToEndpoint;
 import org.assimbly.gateway.domain.enumeration.LogLevelType;
 
 /**
- * A DTO for the Flow entity.
+ * A DTO for the {@link org.assimbly.gateway.domain.Flow} entity.
  */
 public class FlowDTO implements Serializable {
 
@@ -29,9 +29,14 @@ public class FlowDTO implements Serializable {
 
     private Boolean loadBalancing;
 
+    private Integer instances;
+
     private LogLevelType logLevel;
 
-    private Integer instances;
+    private Boolean distributed;
+
+    private String deployment_id;
+
 
     private Long gatewayId;
 
@@ -105,6 +110,14 @@ public class FlowDTO implements Serializable {
         this.loadBalancing = loadBalancing;
     }
 
+    public Integer getInstances() {
+        return instances;
+    }
+
+    public void setInstances(Integer instances) {
+        this.instances = instances;
+    }
+
     public LogLevelType getLogLevel() {
         return logLevel;
     }
@@ -113,13 +126,20 @@ public class FlowDTO implements Serializable {
         this.logLevel = logLevel;
     }
 
-    
-    public Integer getInstances() {
-        return instances;
+    public Boolean isDistributed() {
+        return distributed;
     }
 
-    public void setInstances(Integer instances) {
-        this.instances = instances;
+    public void setDistributed(Boolean distributed) {
+        this.distributed = distributed;
+    }
+
+    public String getDeployment_id() {
+        return deployment_id;
+    }
+
+    public void setDeployment_id(String deployment_id) {
+        this.deployment_id = deployment_id;
     }
 
     public Long getGatewayId() {
@@ -186,11 +206,13 @@ public class FlowDTO implements Serializable {
             ", redeliveryDelay=" + getRedeliveryDelay() +
             ", type='" + getType() + "'" +
             ", loadBalancing='" + isLoadBalancing() + "'" +
-            ", logLevel='" + getLogLevel() + "'" +
             ", instances=" + getInstances() +
-            ", gateway=" + getGatewayId() +
-            ", fromEndpoint=" + getFromEndpointId() +
-            ", errorEndpoint=" + getErrorEndpointId() +
+            ", logLevel='" + getLogLevel() + "'" +
+            ", distributed='" + isDistributed() + "'" +
+            ", deployment_id='" + getDeployment_id() + "'" +
+            ", gatewayId=" + getGatewayId() +
+            ", fromEndpointId=" + getFromEndpointId() +
+            ", errorEndpointId=" + getErrorEndpointId() +
             "}";
     }
 }

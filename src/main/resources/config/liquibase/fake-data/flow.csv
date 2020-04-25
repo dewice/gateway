@@ -1,11 +1,11 @@
-id;name;auto_start;off_loading;maximum_redeliveries;redelivery_delay;type;load_balancing;instances;log_level
-1;invoice Tasty Frozen Cheese;true;false;64749;19568;orange;true;47307;TRACE
-2;Home Loan Account hacking end-to-end;false;false;85325;78158;Field Gloves partnerships;false;81454;DEBUG
-3;Practical Soft Bike Tanzania;true;false;10524;93690;Incredible Cotton Ball;true;45075;TRACE
-4;Cheese;false;true;66125;41073;Plastic superstructure throughput;true;78020;TRACE
-5;Sharable fuchsia Tasty Rubber Shirt;false;true;31114;70696;Bedfordshire;true;94522;ERROR
-6;Iran;false;false;52426;42614;transmitting Rustic Soft Bike Connecticut;false;93138;DEBUG
-7;Zambia;false;true;47553;12063;bi-directional;false;85263;WARN
-8;strategic firewall;true;true;63448;80038;object-oriented silver calculate;false;55946;TRACE
-9;e-business invoice invoice;false;true;53687;57304;Response Profound;true;64968;DEBUG
-10;Buckinghamshire productize cross-platform;true;true;74711;40639;Manager;true;27168;OFF
+id;name;auto_start;off_loading;maximum_redeliveries;redelivery_delay;type;load_balancing;instances;log_level;distributed;deployment_id
+1;invoice Tasty Frozen Cheese;true;false;64749;19568;orange;true;47307;TRACE;true;Somalia Plastic
+2;Car;true;true;97721;46588;Gloves;false;9265;DEBUG;false;compelling Martinique Camp
+3;open-source Tanzania;true;false;10524;93690;Incredible Cotton Ball;true;45075;TRACE;false;back-end
+4;withdrawal RAM;false;false;89648;32754;invoice Rapid TCP;false;81952;ERROR;true;port
+5;object-oriented Response;false;false;16503;21435;infrastructures Mount;false;82493;ERROR;false;monitoring Rubber sky blue
+6;generate Coves Gorgeous;false;false;85263;245;Manager;true;35779;TRACE;true;mobile object-oriented
+7;Producer;true;false;55946;20767;USB;true;33460;DEBUG;true;connecting Maryland
+8;content-based invoice invoice;true;false;20776;70997;Automotive;true;65562;OFF;true;morph Manager Future
+9;invoice;true;false;68899;74980;Ergonomic Montana Pennsylvania;false;67882;DEBUG;false;Shoes Fresh
+10;bandwidth e-markets;false;false;28778;80883;West Virginia;false;53210;TRACE;true;payment Grocery Practical

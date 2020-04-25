@@ -49,11 +49,18 @@ public class Flow implements Serializable {
     @Column(name = "load_balancing")
     private Boolean loadBalancing;
 
-    @Column(name = "log_level")
-    private LogLevelType logLevel;
-    
     @Column(name = "instances")
     private Integer instances;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "log_level")
+    private LogLevelType logLevel;
+
+    @Column(name = "distributed")
+    private Boolean distributed;
+
+    @Column(name = "deployment_id")
+    private String deployment_id;
 
     @ManyToOne
     @JsonIgnoreProperties("flows")
@@ -70,13 +77,7 @@ public class Flow implements Serializable {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "flow",cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH})
     @JsonIgnore
     private Set<ToEndpoint> toEndpoints = new HashSet<>();
-    
-    /*
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(unique = true)
-    private Maintenance maintenance; 
-    */ 
-    
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -177,6 +178,19 @@ public class Flow implements Serializable {
         this.loadBalancing = loadBalancing;
     }
 
+    public Integer getInstances() {
+        return instances;
+    }
+
+    public Flow instances(Integer instances) {
+        this.instances = instances;
+        return this;
+    }
+
+    public void setInstances(Integer instances) {
+        this.instances = instances;
+    }
+
     public LogLevelType getLogLevel() {
         return logLevel;
     }
@@ -189,18 +203,31 @@ public class Flow implements Serializable {
     public void setLogLevel(LogLevelType logLevel) {
         this.logLevel = logLevel;
     }
-    
-    public Integer getInstances() {
-        return instances;
+
+    public Boolean isDistributed() {
+        return distributed;
     }
 
-    public Flow instances(Integer instances) {
-        this.instances = instances;
+    public Flow distributed(Boolean distributed) {
+        this.distributed = distributed;
         return this;
     }
 
-    public void setInstances(Integer instances) {
-        this.instances = instances;
+    public void setDistributed(Boolean distributed) {
+        this.distributed = distributed;
+    }
+
+    public String getDeployment_id() {
+        return deployment_id;
+    }
+
+    public Flow deployment_id(String deployment_id) {
+        this.deployment_id = deployment_id;
+        return this;
+    }
+
+    public void setDeployment_id(String deployment_id) {
+        this.deployment_id = deployment_id;
     }
 
     public Gateway getGateway() {
@@ -273,19 +300,15 @@ public class Flow implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Flow)) {
             return false;
         }
-        Flow flow = (Flow) o;
-        if (flow.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), flow.getId());
+        return id != null && id.equals(((Flow) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return 31;
     }
 
     @Override
@@ -300,6 +323,9 @@ public class Flow implements Serializable {
             ", type='" + getType() + "'" +
             ", loadBalancing='" + isLoadBalancing() + "'" +
             ", instances=" + getInstances() +
+            ", logLevel='" + getLogLevel() + "'" +
+            ", distributed='" + isDistributed() + "'" +
+            ", deployment_id='" + getDeployment_id() + "'" +
             "}";
     }
 }

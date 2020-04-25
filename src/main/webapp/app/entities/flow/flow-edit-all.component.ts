@@ -61,7 +61,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     savingFlowSuccess = false;
     savingFlowSuccessMessage = 'Flow successfully saved';
     finished = false;
-    distributed = false;
+    // distributed: boolean;
+    // loadBalancing: boolean;
 
     gateways: Gateway[];
     configuredGateway: Gateway;
@@ -216,6 +217,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                 this.flowService.find(id).subscribe(flow => {
                     if (flow) {
                         this.flow = flow.body;
+                        // this.distributed = flow.body.distributed;
+                        // this.loadBalancing = flow.body.loadBalancing;
                         if (this.singleGateway) {
                             this.flow.gatewayId = this.gateways[this.indexGateway].id;
                         }
@@ -332,6 +335,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                     this.flow.maximumRedeliveries = 0;
                     this.flow.redeliveryDelay = 3000;
                     this.flow.logLevel = LogLevelType.OFF;
+                    this.flow.distributed = false;
+                    this.flow.loadBalancing = false;
                     if (this.singleGateway) {
                         this.indexGateway = 0;
                         this.flow.gatewayId = this.gateways[this.indexGateway].id;
@@ -560,6 +565,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             redeliveryDelay: new FormControl(flow.redeliveryDelay),
             logLevel: new FormControl(flow.logLevel),
             distributed: new FormControl(flow.distributed),
+            loadBalancing: new FormControl(flow.loadBalancing),
             gateway: new FormControl(flow.gatewayId),
             endpointsData: new FormArray([])
         });
@@ -603,6 +609,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             redeliveryDelay: flow.redeliveryDelay,
             logLevel: flow.logLevel,
             distributed: flow.distributed,
+            loadBalancing: flow.loadBalancing,
             gateway: flow.gatewayId
         });
     }
@@ -1007,6 +1014,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.flow.redeliveryDelay = flowControls.redeliveryDelay.value;
         this.flow.logLevel = flowControls.logLevel.value;
         this.flow.distributed = flowControls.distributed.value;
+        this.flow.loadBalancing = flowControls.loadBalancing.value;
         this.flow.gatewayId = flowControls.gateway.value;
 
         (<FormArray>flowControls.endpointsData).controls.forEach((endpoint, index) => {

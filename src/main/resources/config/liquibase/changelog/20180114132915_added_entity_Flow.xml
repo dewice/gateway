@@ -43,6 +43,12 @@
             <column name="log_level" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+            <column name="distributed" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="deployment_id" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="gateway_id" type="bigint">
                 <constraints nullable="true" />
             </column>
@@ -84,6 +90,8 @@
             <column name="load_balancing" type="boolean"/>
             <column name="instances" type="numeric"/>
             <column name="log_level" type="string"/>
+            <column name="distributed" type="boolean"/>
+            <column name="deployment_id" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here, do not remove-->
         </loadData>
     </changeSet>
