@@ -27,6 +27,7 @@ export class FlowService {
     public resourceUrl = SERVER_API_URL + 'api/flows';
     public connectorUrl = SERVER_API_URL + 'api/connector';
     public environmentUrl = SERVER_API_URL + 'api/environment';
+    public kubernetesUrl = SERVER_API_URL + 'api/kubernetes';
 
     private routerSubscription: Subscription | null = null;
     private connectionSubject: ReplaySubject<void> = new ReplaySubject(1);
@@ -59,6 +60,10 @@ export class FlowService {
 
     create(flow: IFlow): Observable<EntityResponseType> {
         return this.http.post<IFlow>(this.resourceUrl, flow, { observe: 'response' });
+    }
+
+    createDeployment(flow: IFlow): Observable<EntityResponseType> {
+        return this.http.get<any>(`${this.kubernetesUrl}/startDeployment/${flow.id as number}/1`);
     }
 
     update(flow: IFlow): Observable<EntityResponseType> {

@@ -2,7 +2,6 @@ package org.assimbly.gateway;
 
 import org.assimbly.gateway.config.ApplicationProperties;
 import org.assimbly.gateway.config.DefaultProfileUtil;
-import org.assimbly.gateway.config.ApplicationProperties.Gateway;
 
 import io.github.jhipster.config.JHipsterConstants;
 
@@ -24,7 +23,6 @@ import java.net.UnknownHostException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
 @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})

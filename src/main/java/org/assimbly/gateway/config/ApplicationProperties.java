@@ -14,6 +14,7 @@ public class ApplicationProperties {
 	public final Info info = new Info();
     public final Documentation documentation = new Documentation();
     public final Gateway gateway = new Gateway();
+    public final Cluster cluster = new Cluster();
 
     public Info getInfo() {
         return info;
@@ -25,6 +26,10 @@ public class ApplicationProperties {
 
     public Gateway getGateway() {
         return gateway;
+    }
+    
+    public Cluster getCluster() {
+    	return cluster;
     }
     
     public static class Info {
@@ -87,5 +92,25 @@ public class ApplicationProperties {
         }
     }
     
-    
+    public static class Cluster {
+
+		private String deploymentName;
+    	private String deploymentUrl;
+    	
+    	public String getDeploymentname() {
+			return deploymentName;
+		}
+    	
+		public void setDeploymentname(String deploymentname) {
+			this.deploymentName = deploymentname;
+		}
+		
+		public String getDeploymenturl() {
+			return deploymentUrl;
+		}
+		
+		public void setDeploymenturl(String deploymenturl) {
+			this.deploymentUrl = deploymenturl;
+		}
+    }
 }

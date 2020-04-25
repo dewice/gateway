@@ -107,6 +107,13 @@
 							<select class="form-control" id="field_logLevel" formControlName="logLevel">
 									<option *ngFor="let id of logLevelListType" [ngValue]="logLevel[id]">{{logLevel[id]}}</option>
 							</select>-->	
+						</div>
+						<div class="form-group w-25">
+							<label class="form-control-label" for="field_distributed">Distributed</label>
+							<select type="text" class="form-control" id="field_distributed" *ngIf="flow" formControlName="distributed" [(value)]="distributed">
+								<option value="true">true</option>
+								<option value="false">false</option>
+							</select>
 						</div> 					
 						<div class="form-group" *ngIf="!singleGateway">
 							<label class="form-control-label" for="field_gateway">Gateway</label>

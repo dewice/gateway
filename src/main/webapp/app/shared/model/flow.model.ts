@@ -8,7 +8,7 @@ export interface IFlow {
     maximumRedeliveries?: number;
     redeliveryDelay?: number;
     type?: string;
-    loadBalancing?: boolean;
+    distributed?: boolean;
     instances?: number;
     logLevel?: LogLevelType;
     gatewayId?: number;
@@ -26,7 +26,7 @@ export class Flow implements IFlow {
         public maximumRedeliveries?: number,
         public redeliveryDelay?: number,
         public type?: string,
-        public loadBalancing?: boolean,
+        public distributed?: boolean,
         public instances?: number,
         public logLevel?: LogLevelType,
         public gatewayId?: number,
@@ -36,7 +36,7 @@ export class Flow implements IFlow {
     ) {
         this.autoStart = this.autoStart || false;
         this.offLoading = this.offLoading || false;
-        this.loadBalancing = this.loadBalancing || false;
+        this.distributed = this.distributed || false;
     }
 }
 

@@ -35,7 +35,6 @@ import { ServicePopupService, ServiceDialogComponent } from 'app/entities/servic
     templateUrl: './flow-edit-all.component.html'
 })
 export class FlowEditAllComponent implements OnInit, OnDestroy {
-    
     flow: IFlow;
     fromEndpoint: IFromEndpoint;
     fromEndpointOptions: Array<Option> = [];
@@ -46,16 +45,23 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     toEndpoint: IToEndpoint;
     services: Service[];
     headers: IHeader[];
-    
-    public logLevelListType = [LogLevelType.OFF, LogLevelType.INFO, LogLevelType.ERROR, LogLevelType.TRACE,LogLevelType.WARN,LogLevelType.DEBUG];
-       
-    
+
+    public logLevelListType = [
+        LogLevelType.OFF,
+        LogLevelType.INFO,
+        LogLevelType.ERROR,
+        LogLevelType.TRACE,
+        LogLevelType.WARN,
+        LogLevelType.DEBUG
+    ];
+
     isSaving: boolean;
     savingFlowFailed = false;
     savingFlowFailedMessage = 'Saving failed (check logs)';
     savingFlowSuccess = false;
     savingFlowSuccessMessage = 'Flow successfully saved';
     finished = false;
+    distributed = false;
 
     gateways: Gateway[];
     configuredGateway: Gateway;
@@ -78,7 +84,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     offloadingPopoverMessage: string;
     maximumRedeliveriesPopoverMessage: string;
     redeliveryDelayPopoverMessage: string;
-    logLevelPopoverMessage: string
+    logLevelPopoverMessage: string;
 
     componentPopoverMessage: string;
     optionsPopoverMessage: string;
@@ -128,6 +134,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     private eventSubscriber: Subscription;
     private wikiDocUrl: string;
     private camelDocUrl: string;
+    private deployConfig: any;
 
     modalRef: NgbModalRef | null;
 
@@ -552,6 +559,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             maximumRedeliveries: new FormControl(flow.maximumRedeliveries),
             redeliveryDelay: new FormControl(flow.redeliveryDelay),
             logLevel: new FormControl(flow.logLevel),
+            distributed: new FormControl(flow.distributed),
             gateway: new FormControl(flow.gatewayId),
             endpointsData: new FormArray([])
         });
@@ -594,6 +602,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             maximumRedeliveries: flow.maximumRedeliveries,
             redeliveryDelay: flow.redeliveryDelay,
             logLevel: flow.logLevel,
+            distributed: flow.distributed,
             gateway: flow.gatewayId
         });
     }
@@ -946,6 +955,10 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                                     this.toEndpoints.forEach(toEndpoint => {
                                         toEndpoint.flowId = this.flow.id;
                                     });
+                                    this.flowService.createDeployment(this.flow).subscribe(createdDeployment => {
+                                        this.deployConfig = createdDeployment;
+                                        console.log(this.deployConfig);
+                                    });
                                     this.toEndpointService.createMultiple(this.toEndpoints).subscribe(
                                         toRes => {
                                             this.toEndpoints = toRes.body;
@@ -993,6 +1006,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.flow.maximumRedeliveries = flowControls.maximumRedeliveries.value;
         this.flow.redeliveryDelay = flowControls.redeliveryDelay.value;
         this.flow.logLevel = flowControls.logLevel.value;
+        this.flow.distributed = flowControls.distributed.value;
         this.flow.gatewayId = flowControls.gateway.value;
 
         (<FormArray>flowControls.endpointsData).controls.forEach((endpoint, index) => {
@@ -1145,7 +1159,10 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     }
 
     private subscribeToSaveResponse(result: Observable<Flow>) {
-        result.subscribe((res: Flow) => this.onSaveSuccess(res), (res: Response) => this.onSaveError());
+        result.subscribe(
+            (res: Flow) => this.onSaveSuccess(res),
+            (res: Response) => this.onSaveError()
+        );
     }
 
     private onSaveSuccess(result: Flow) {
