@@ -56,9 +56,6 @@ public class FlowServiceImpl implements FlowService {
         	Deployment deployment = ks.createDeployment(Long.toString(flow.getId()), flow.getInstances());
         	ks.deployDeployment(deployment, Long.toString(flow.getId()));
         	log.debug("Deployment {} for flow {} is created", deployment, flow);
-        	
-//        	flow.setDeployment(deployment);
-//        	flow = flowRepository.save(flow);
         }
         
         return flowMapper.toDto(flow);
