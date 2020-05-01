@@ -29,6 +29,11 @@ public class KubernetesResource {
 		fs.findById(Long.parseLong(id)).ifPresent(x -> {x.setDeployment(deployment); fs.save(x); });
 	}
 	
+	@GetMapping(path = "/kubernetes/checkCluster", produces = "application/json")
+	public boolean checkCluster() {
+		return ks.checkCluster();
+	}
+	
 	@DeleteMapping(path = "/kubernetes/deleteDeployment/{id}", produces = "application/json")
 	public String deleteDeployment(@PathVariable String id) {
 		

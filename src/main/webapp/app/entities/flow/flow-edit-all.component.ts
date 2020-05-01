@@ -61,6 +61,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     savingFlowSuccess = false;
     savingFlowSuccessMessage = 'Flow successfully saved';
     finished = false;
+    clusterStatus: boolean;
     // distributed: boolean;
     // loadBalancing: boolean;
 
@@ -166,6 +167,9 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.isSaving = false;
         this.createRoute = 0;
         this.setPopoverMessages();
+        this.flowService.checkCluster().subscribe(response => {
+            this.clusterStatus = response;
+        });
 
         this.subscription = this.route.params.subscribe(params => {
             if (params['clone']) {
@@ -565,7 +569,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             maximumRedeliveries: new FormControl(flow.maximumRedeliveries),
             redeliveryDelay: new FormControl(flow.redeliveryDelay),
             logLevel: new FormControl(flow.logLevel),
-            distributed: new FormControl(flow.distributed),
+            distributed: new FormControl({ value: flow.distributed, disabled: !this.clusterStatus }),
             loadBalancing: new FormControl(flow.loadBalancing),
             instances: new FormControl(flow.instances),
             gateway: new FormControl(flow.gatewayId),

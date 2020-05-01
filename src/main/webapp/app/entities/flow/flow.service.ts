@@ -70,6 +70,10 @@ export class FlowService {
     //     return this.http.delete<any>(`${this.kubernetesUrl}/deleteDeployment/${id}`);
     // }
 
+    checkCluster(): Observable<boolean> {
+        return this.http.get<boolean>(`${this.kubernetesUrl}/checkCluster`);
+    }
+
     update(flow: IFlow): Observable<EntityResponseType> {
         return this.http.put<IFlow>(this.resourceUrl, flow, { observe: 'response' });
     }

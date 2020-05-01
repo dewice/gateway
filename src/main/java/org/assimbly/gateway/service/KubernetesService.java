@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.assimbly.gateway.repository.DeploymentRepository;
 import org.assimbly.gateway.repository.FlowRepository;
@@ -137,6 +138,29 @@ public class KubernetesService {
 		}
 		
 		return "DeploymentFlow not found";
-	}	
+	}
+	
+	public boolean checkCluster() {
+		String clusterUrl = "";
+		
+		// Build clusterUrl from application properties till /api is reached e.g: http://<url>/api
+		for(int i = 0; i < 4; i++) {
+			clusterUrl += depUrl.split("(?=/)")[i];
+		}
+		
+		// Execute request to check if the cluster is reachable, return true if reachable else false
+		try
+		{
+			HttpEntity<String> get_entity = new HttpEntity<String>(headers);
+			restTemplate.exchange(clusterUrl, HttpMethod.GET, get_entity, String.class);
+			
+			return true;
+			
+		} catch(ResourceAccessException e) {
+
+			return false;
+		}
+		
+	}
 }
 
