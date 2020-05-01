@@ -54,7 +54,9 @@ public class FlowServiceImpl implements FlowService {
         if (flow.isDistributed() == true)
         {
         	Deployment deployment = ks.createDeployment(Long.toString(flow.getId()), flow.getInstances());
-        	ks.deployDeployment(deployment, Long.toString(flow.getId()));
+        	ks.deployDeployment(deployment, Long.toString(flow.getId()));       	
+        	flowRepository.findById(flow.getId()).ifPresent(x -> x.setDeployment(deployment));
+        	
         	log.debug("Deployment {} for flow {} is created", deployment, flow);
         }
         

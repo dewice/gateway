@@ -89,7 +89,7 @@ public class KubernetesService {
 		HttpEntity<String> put_entity = new HttpEntity<String>(JSONDeploy.toString(),headers);
 		String deploymentUrl = deployment.getUrl();
 		restTemplate.exchange(deploymentUrl, HttpMethod.PUT, put_entity, String.class);
-		flowRepository.findById(Long.parseLong(id)).ifPresent(x -> x.setDeployment(deployment));
+//		flowRepository.findById(Long.parseLong(id)).ifPresent(x -> x.setDeployment(deployment));
 		
 		// Ready second deployment
 		String nextGetDeploymentUrl = depUrl + '/' + depName + Long.toString(deployment.getId() + 1);
