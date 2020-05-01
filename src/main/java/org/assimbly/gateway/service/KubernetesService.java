@@ -1,6 +1,7 @@
 package org.assimbly.gateway.service;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -10,11 +11,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.assimbly.gateway.repository.DeploymentRepository;
+import org.assimbly.gateway.repository.FlowRepository;
+
+import java.util.Optional;
 
 import org.assimbly.gateway.domain.Deployment;
+import org.assimbly.gateway.domain.Flow;
 
 @Service
 public class KubernetesService {
+	
+	@Autowired
+	DeploymentRepository deploymentRepository;
+
+	@Autowired
+	FlowRepository flowRepository;
+	
+	@Autowired
+	RestTemplate restTemplate;
+	
+	HttpHeaders headers;
 	
 	private final Environment environment;
 	private final String depName;
@@ -24,38 +41,57 @@ public class KubernetesService {
 		this.environment = env;
 		this.depName = environment.getProperty("application.cluster.deploymentName");
 		this.depUrl = environment.getProperty("application.cluster.deploymentUrl");
+		
+		this.headers = new HttpHeaders();
+		this.headers.setContentType(MediaType.APPLICATION_JSON);
 	}
 
 	// Creates a new kubernetes deployment
-	public Deployment createDeployment(String id, Integer instances) {
+	public Deployment createDeployment(String id, Integer instances, boolean save) {
 		
-		Deployment dep = new Deployment(Integer.parseInt(id));
-		String deploymentName = depName + id;
+		Deployment dep = new Deployment();
+		
+		// Save to database to auto-generate id, only for flow deployments
+		if (save == true) {
+			deploymentRepository.save(dep);
+			String deploymentName = depName + Long.toString(dep.getId());
+			dep.setName(deploymentName);
+		}
+		
+		// Next deployments use given id's
+		else {
+			String deploymentName = depName + id;
+			dep.setName(deploymentName);
+		}
+
 		dep.updateArgs();
-		dep.setName(deploymentName);
 		dep.setSpec("replicas", instances);
 		dep.setUrl(depUrl + "/" + dep.getName());
 		dep.updateName();
 		dep.addToContainers("image", "localhost:5000/connectorservice");
 		dep.setPort(8081);
 		
+		// Save changes to database for flow deployments
+		if (save == true) {
+			deploymentRepository.save(dep);
+		}
+		
 		return dep;
 	}
 	
 	// Deploys deployment
-	public String deployDeployment(Deployment deployment) {
+	public String deployDeployment(Deployment deployment, String id) {
 		
 		// Update current deployment
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
 		JSONObject JSONDeploy = new JSONObject(deployment);
 		HttpEntity<String> put_entity = new HttpEntity<String>(JSONDeploy.toString(),headers);
 		String deploymentUrl = deployment.getUrl();
 		ResponseEntity<String> put_answer = restTemplate.exchange(deploymentUrl, HttpMethod.PUT, put_entity, String.class);
+		Optional<Flow> flow = flowRepository.findById(Long.parseLong(id));
+		flow.ifPresent(x -> { x.setDeployment(deployment); flowRepository.save(x); });
 		
 		// Ready second deployment
-		String nextGetDeploymentUrl = depUrl + '/' + depName + Integer.toString(deployment.getId() + 1);
+		String nextGetDeploymentUrl = depUrl + '/' + depName + Long.toString(deployment.getId() + 1);
 		HttpEntity<String> get_entity = new HttpEntity<String>(headers);
 		
 		// Execute request to check if the next deployment exist, catch error if not exist and create next deployment
@@ -64,13 +100,38 @@ public class KubernetesService {
 			restTemplate.exchange(nextGetDeploymentUrl, HttpMethod.GET, get_entity, String.class);
 			
 		} catch(HttpClientErrorException e) {
-			Deployment nextDep = createDeployment(Integer.toString((deployment.getId() + 1)), 1);
+			Deployment nextDep = createDeployment(Long.toString((deployment.getId() + 1)), 1, false);
 			JSONObject JSONDeploy2 = new JSONObject(nextDep);
 			HttpEntity<String> entity2 = new HttpEntity<String>(JSONDeploy2.toString(), headers);
 			restTemplate.postForObject(depUrl, entity2, String.class);
+
 		}
 		
 		// Return the current updated deployment
 		return put_answer.getBody();	
 	}
+	
+	public String deleteDeployment(String flowId) {
+		Optional<Flow> flow = flowRepository.findById(Long.parseLong(flowId));
+		
+		if (flow.isPresent()) {
+
+			Flow flowObj = flow.get();
+			Deployment deployment = flowObj.getDeployment();
+			
+			if (deployment != null)
+			{
+				HttpEntity<String> delete_entity = new HttpEntity<String>(headers);
+				String deploymentName = deployment.getName();
+				String deleteDeploymentUrl = depUrl + '/' + deploymentName;
+				
+				ResponseEntity<String> delete_answer = restTemplate.exchange(deleteDeploymentUrl, HttpMethod.DELETE, delete_entity, String.class);
+				
+				return delete_answer.getBody();
+			}
+		}
+		
+		return "DeploymentFlow not found";
+	}	
 }
+

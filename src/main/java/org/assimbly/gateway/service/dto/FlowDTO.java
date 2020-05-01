@@ -35,8 +35,7 @@ public class FlowDTO implements Serializable {
 
     private Boolean distributed;
 
-    private String deployment_id;
-
+    private Long deploymentId;
 
     private Long gatewayId;
 
@@ -134,12 +133,12 @@ public class FlowDTO implements Serializable {
         this.distributed = distributed;
     }
 
-    public String getDeployment_id() {
-        return deployment_id;
+    public Long getDeploymentId() {
+        return deploymentId;
     }
 
-    public void setDeployment_id(String deployment_id) {
-        this.deployment_id = deployment_id;
+    public void setDeploymentId(Long deploymentId) {
+        this.deploymentId = deploymentId;
     }
 
     public Long getGatewayId() {
@@ -209,7 +208,7 @@ public class FlowDTO implements Serializable {
             ", instances=" + getInstances() +
             ", logLevel='" + getLogLevel() + "'" +
             ", distributed='" + isDistributed() + "'" +
-            ", deployment_id='" + getDeployment_id() + "'" +
+            ", deployment_id='" + getDeploymentId() + "'" +
             ", gatewayId=" + getGatewayId() +
             ", fromEndpointId=" + getFromEndpointId() +
             ", errorEndpointId=" + getErrorEndpointId() +

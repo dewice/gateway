@@ -59,12 +59,13 @@ public class Flow implements Serializable {
     @Column(name = "distributed")
     private Boolean distributed;
 
-    @Column(name = "deployment_id")
-    private String deployment_id;
-
     @ManyToOne
     @JsonIgnoreProperties("flows")
     private Gateway gateway;
+    
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(unique = true)
+    private Deployment deployment;
  
     @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(unique = true)
@@ -217,17 +218,17 @@ public class Flow implements Serializable {
         this.distributed = distributed;
     }
 
-    public String getDeployment_id() {
-        return deployment_id;
+    public Deployment getDeployment() {
+        return deployment;
     }
 
-    public Flow deployment_id(String deployment_id) {
-        this.deployment_id = deployment_id;
+    public Flow deployment(Deployment deployment) {
+        this.deployment = deployment;
         return this;
     }
 
-    public void setDeployment_id(String deployment_id) {
-        this.deployment_id = deployment_id;
+    public void setDeployment(Deployment deployment) {
+        this.deployment = deployment;
     }
 
     public Gateway getGateway() {
@@ -325,7 +326,7 @@ public class Flow implements Serializable {
             ", instances=" + getInstances() +
             ", logLevel='" + getLogLevel() + "'" +
             ", distributed='" + isDistributed() + "'" +
-            ", deployment_id='" + getDeployment_id() + "'" +
+//            ", deployment_id='" + getDeployment_id() + "'" +
             "}";
     }
 }

@@ -25,6 +25,12 @@
                                  constraintName="fk_flow_error_endpoint_id"
                                  referencedColumnNames="id"
                                  referencedTableName="error_endpoint"/>
+        
+        <addForeignKeyConstraint baseColumnNames="deployment_id"
+                                 baseTableName="flow"
+                                 constraintName="fk_flow_deployment_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="deployment"/>
 
     </changeSet>
 </databaseChangeLog>

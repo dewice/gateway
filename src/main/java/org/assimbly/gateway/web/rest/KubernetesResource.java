@@ -1,6 +1,7 @@
 package org.assimbly.gateway.web.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,14 @@ public class KubernetesResource {
 	
 	@GetMapping(path = "/kubernetes/startDeployment/{id}/{replicas}", produces = "application/json")
 	public String deployDeployment(@PathVariable String id, @PathVariable Integer replicas) {
-		Deployment deployment = ks.createDeployment(id, replicas);
-
-		return ks.deployDeployment(deployment);
+		Deployment deployment = ks.createDeployment(id, replicas, true);
+		
+		return ks.deployDeployment(deployment, id);
+	}
+	
+	@DeleteMapping(path = "/kubernetes/deleteDeployment/{id}", produces = "application/json")
+	public String deleteDeployment(@PathVariable String id) {
+		
+		return ks.deleteDeployment(id);
 	}
 }

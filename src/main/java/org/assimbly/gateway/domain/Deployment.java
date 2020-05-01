@@ -1,24 +1,53 @@
 package org.assimbly.gateway.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.json.JSONPropertyIgnore;
 
-public class Deployment {
-	private final String apiVersion = "apps/v1";
-	private final String kind = "Deployment";
-	private Map<String, String> metadata = new HashMap<String, String>();
-	private String name;
-	private String url;
-	private int id;
-	
-	public Deployment(int flowId) {
-		this.setId(flowId);
-	}
 
+@Entity
+@Table(name = "deployment")
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class Deployment implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
+	@Transient
+	private final String apiVersion = "apps/v1";
+	
+	@Transient
+	private final String kind = "Deployment";
+	
+	@Transient
+	private Map<String, String> metadata = new HashMap<String, String>();
+    
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	
+    @Column(name = "name")
+    private String name;
+    
+    @Transient
+	private String url;
+	
+	public Deployment() {}
+	
+	@Transient
 	private Map<String, Object> spec = new HashMap<String, Object>() {{		
 		put("selector", new HashMap<String, Object>() {{
 			put("matchLabels", new HashMap<String, Object>());
@@ -39,9 +68,10 @@ public class Deployment {
 		}});
 	}};
 	
+	@Transient
 	private List<String> args = new ArrayList<String>() {{
 		add("-jar");
-		add("/home/connector-0.0.1-SNAPSHOT.jar");
+		add("/home/connector-1.0-SNAPSHOT.jar");
 		add("--spring.main.lazy-initialization=true");
         add("-Xverify:none");
         add("--spring.main.banner-mode=OFF");
@@ -52,31 +82,38 @@ public class Deployment {
 		add("--eureka.client.serviceUrl.defaultZone=http://admin:admin@10.102.230.214:8761/eureka/");
 		add("--spring.config.location=classpath:/config/application.yml,classpath:/config/application-dev.yml,classpath:/config/bootstrap.yml");
 	}};
-
+	
+	@Transient
 	public String getApiVersion() {
 		return apiVersion;
 	}
 	
+	@Transient
 	public String getKind() {
 		return kind;
 	}
 	
+	@Transient
 	public void setMetaData(Map<String, String> metadata) {
 		this.metadata = metadata;
 	}
 	
+	@Transient
 	public void addMetaData(String key, String value) {
 		Object add = metadata.get(key) != null ? metadata.replace(key, value) : metadata.put(key, value);
 	}
 	
+	@Transient
 	public Map<String, String> getMetadata() {
 		return metadata;
 	}
 	
+	@Transient
 	public Map<String, Object> getSpec() {
 		return this.spec;
 	}
 	
+	@Transient
 	public void addToContainers(String key, Object value) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> spec = (HashMap<String, Object>) template.get("spec");
@@ -86,6 +123,7 @@ public class Deployment {
 		Object add = keyValues.get(key) != null ? keyValues.replace(key, value) : keyValues.put(key, value);
 	}
 	
+	@Transient
 	public void deleteFromContainers(String key) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> spec = (HashMap<String, Object>) template.get("spec");
@@ -95,6 +133,7 @@ public class Deployment {
 		keyValues.remove(key);
 	}
 	
+	@Transient
 	public void addToMatchLabels(String key, Object value) {
 		HashMap<String, Object> selector = (HashMap<String, Object>) this.spec.get("selector");
 		HashMap<String, Object> matchlabels = (HashMap<String, Object>) selector.get("matchLabels");
@@ -102,6 +141,7 @@ public class Deployment {
 		Object add = matchlabels.get(key) != null ? matchlabels.replace(key, value) : matchlabels.put(key, value);
 	}
 	
+	@Transient
 	public void addToLabels(String key, Object value) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> matchlabels = (HashMap<String, Object>) template.get("metadata");
@@ -111,28 +151,34 @@ public class Deployment {
 		
 	}
 	
+	@Transient
 	public void setSpec(String key, Object value) {
 		spec.put(key, value);
 	}
 	
 	@JSONPropertyIgnore
+	@Transient
 	public List<String> getArgs() {
 		return args;
 	}
-
+	
+	@Transient
 	public void setArgs(List<String> args) {
 		this.args = args;
 	}
 	
+	@Transient
 	public void addArgs(String arg) {
 		Object add = this.args.contains(arg) ? this.args.set(args.indexOf(arg), arg) : this.args.add(arg);
 	}
 	
+	@Transient
 	public void updateArgs() {
 		deleteFromContainers("args");
 		addToContainers("args", getArgs());
 	}
 	
+	@Transient
 	public void removeArg(String arg) {
 		this.args.remove(arg);
 	}
@@ -146,6 +192,7 @@ public class Deployment {
 		this.name = name;
 	}
 	
+	@Transient
 	public void updateName() {
 		addToLabels("app", name);
 		addToMatchLabels("app", name);
@@ -155,6 +202,7 @@ public class Deployment {
 		addArgs("--spring.application.name=" + name);
 	}
 	
+	@Transient
 	public void setPort(int port) {
 		addToContainers("ports", new ArrayList<HashMap<String, Object>>(){{
 			add(new HashMap<String, Object>() {{
@@ -164,19 +212,21 @@ public class Deployment {
 	}
 	
 	@JSONPropertyIgnore
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 	
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	
 	@JSONPropertyIgnore
+	@Transient
 	public String getUrl() {
 		return url;
 	}
-
+	
+	@Transient
 	public void setUrl(String url) {
 		this.url = url;
 	}
