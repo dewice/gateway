@@ -1,6 +1,8 @@
 package org.assimbly.gateway.service.impl;
 
 import org.assimbly.gateway.service.FlowService;
+import org.assimbly.gateway.service.KubernetesService;
+import org.assimbly.gateway.domain.Deployment;
 import org.assimbly.gateway.domain.Flow;
 import org.assimbly.gateway.repository.FlowRepository;
 import org.assimbly.gateway.service.dto.FlowDTO;
@@ -25,12 +27,15 @@ public class FlowServiceImpl implements FlowService {
     private final Logger log = LoggerFactory.getLogger(FlowServiceImpl.class);
 
     private final FlowRepository flowRepository;
+    
+    private final KubernetesService ks;
 
     private final FlowMapper flowMapper;
 
-    public FlowServiceImpl(FlowRepository flowRepository, FlowMapper flowMapper) {
+    public FlowServiceImpl(FlowRepository flowRepository, FlowMapper flowMapper, KubernetesService kubeservice) {
         this.flowRepository = flowRepository;
         this.flowMapper = flowMapper;
+        this.ks = kubeservice;
     }
 
     /**
@@ -45,6 +50,17 @@ public class FlowServiceImpl implements FlowService {
 
         Flow flow = flowMapper.toEntity(flowDTO);
         flow = flowRepository.save(flow);
+        
+        if (flow.isDistributed() == true)
+        {
+        	Deployment deployment = ks.createDeployment(Long.toString(flow.getId()), flow.getInstances());
+        	ks.deployDeployment(deployment, Long.toString(flow.getId()));
+        	log.debug("Deployment {} for flow {} is created", deployment, flow);
+        	
+//        	flow.setDeployment(deployment);
+//        	flow = flowRepository.save(flow);
+        }
+        
         return flowMapper.toDto(flow);
     }
 
@@ -99,6 +115,11 @@ public class FlowServiceImpl implements FlowService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Flow : {}", id);
+        flowRepository.findById(id).ifPresent(x -> {
+        	if (x.isDistributed() == true) {
+        		log.debug(ks.deleteDeployment(Long.toString(id)));
+        	}
+        });;
         flowRepository.deleteById(id);
     }
     

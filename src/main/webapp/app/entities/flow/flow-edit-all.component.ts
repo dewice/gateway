@@ -337,6 +337,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                     this.flow.logLevel = LogLevelType.OFF;
                     this.flow.distributed = false;
                     this.flow.loadBalancing = false;
+                    this.flow.instances = 1;
                     if (this.singleGateway) {
                         this.indexGateway = 0;
                         this.flow.gatewayId = this.gateways[this.indexGateway].id;
@@ -566,6 +567,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             logLevel: new FormControl(flow.logLevel),
             distributed: new FormControl(flow.distributed),
             loadBalancing: new FormControl(flow.loadBalancing),
+            instances: new FormControl(flow.instances),
             gateway: new FormControl(flow.gatewayId),
             endpointsData: new FormArray([])
         });
@@ -610,6 +612,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             logLevel: flow.logLevel,
             distributed: flow.distributed,
             loadBalancing: flow.loadBalancing,
+            instances: flow.instances,
             gateway: flow.gatewayId
         });
     }
@@ -962,10 +965,10 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                                     this.toEndpoints.forEach(toEndpoint => {
                                         toEndpoint.flowId = this.flow.id;
                                     });
-                                    this.flowService.createDeployment(this.flow).subscribe(createdDeployment => {
-                                        this.deployConfig = createdDeployment;
-                                        console.log(this.deployConfig);
-                                    });
+                                    // this.flowService.createDeployment(this.flow).subscribe(createdDeployment => {
+                                    //     this.deployConfig = createdDeployment;
+                                    //     console.log(this.deployConfig);
+                                    // });
                                     this.toEndpointService.createMultiple(this.toEndpoints).subscribe(
                                         toRes => {
                                             this.toEndpoints = toRes.body;
@@ -1015,6 +1018,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.flow.logLevel = flowControls.logLevel.value;
         this.flow.distributed = flowControls.distributed.value;
         this.flow.loadBalancing = flowControls.loadBalancing.value;
+        this.flow.instances = flowControls.instances.value;
         this.flow.gatewayId = flowControls.gateway.value;
 
         (<FormArray>flowControls.endpointsData).controls.forEach((endpoint, index) => {

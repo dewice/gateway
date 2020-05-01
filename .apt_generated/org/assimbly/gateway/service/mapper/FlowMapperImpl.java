@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Generated;
-import org.assimbly.gateway.domain.Deployment;
 import org.assimbly.gateway.domain.ErrorEndpoint;
 import org.assimbly.gateway.domain.Flow;
 import org.assimbly.gateway.domain.FromEndpoint;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2020-04-30T20:32:23+0200",
+    date = "2020-05-01T17:36:08+0200",
     comments = "version: 1.3.1.Final, compiler: Eclipse JDT (IDE) 3.20.0.v20191203-2131, environment: Java 11.0.6 (Oracle Corporation)"
 )
 @Component
@@ -68,7 +67,6 @@ public class FlowMapperImpl implements FlowMapper {
 
         flowDTO.setErrorEndpointId( flowErrorEndpointId( flow ) );
         flowDTO.setGatewayId( flowGatewayId( flow ) );
-        flowDTO.setDeploymentId( flowDeploymentId( flow ) );
         flowDTO.setFromEndpointId( flowFromEndpointId( flow ) );
         flowDTO.setAutoStart( flow.isAutoStart() );
         flowDTO.setDistributed( flow.isDistributed() );
@@ -97,8 +95,8 @@ public class FlowMapperImpl implements FlowMapper {
 
         Flow flow = new Flow();
 
-        flow.setFromEndpoint( fromEndpointMapper.fromId( flowDTO.getFromEndpointId() ) );
         flow.setErrorEndpoint( errorEndpointMapper.fromId( flowDTO.getErrorEndpointId() ) );
+        flow.setFromEndpoint( fromEndpointMapper.fromId( flowDTO.getFromEndpointId() ) );
         flow.setGateway( gatewayMapper.fromId( flowDTO.getGatewayId() ) );
         flow.setAutoStart( flowDTO.isAutoStart() );
         flow.setDistributed( flowDTO.isDistributed() );
@@ -139,21 +137,6 @@ public class FlowMapperImpl implements FlowMapper {
             return null;
         }
         Long id = gateway.getId();
-        if ( id == null ) {
-            return null;
-        }
-        return id;
-    }
-
-    private Long flowDeploymentId(Flow flow) {
-        if ( flow == null ) {
-            return null;
-        }
-        Deployment deployment = flow.getDeployment();
-        if ( deployment == null ) {
-            return null;
-        }
-        Long id = deployment.getId();
         if ( id == null ) {
             return null;
         }

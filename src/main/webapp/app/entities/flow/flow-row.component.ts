@@ -122,6 +122,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
         this.toEndpoints = this.flow.toEndpoints;
         this.getFromEndpoint(this.flow.fromEndpointId);
+        console.log(this.fromEndpoints);
         this.getToEndpoint();
 
         this.registerTriggeredAction();
@@ -454,9 +455,9 @@ export class FlowRowComponent implements OnInit, OnDestroy {
     }
 
     checkDate(r) {
-        if(!!r){
+        if (!!r) {
             return moment(r).format('YYYY-MM-DD HH:mm:ss');
-        }else{
+        } else {
             return '-';
         }
     }

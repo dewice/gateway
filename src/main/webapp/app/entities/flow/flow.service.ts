@@ -62,13 +62,13 @@ export class FlowService {
         return this.http.post<IFlow>(this.resourceUrl, flow, { observe: 'response' });
     }
 
-    createDeployment(flow: IFlow): Observable<EntityResponseType> {
-        return this.http.get<any>(`${this.kubernetesUrl}/startDeployment/${flow.id as number}/1`);
-    }
+    // createDeployment(flow: IFlow): Observable<EntityResponseType> {
+    //     return this.http.get<any>(`${this.kubernetesUrl}/startDeployment/${flow.id as number}/1`);
+    // }
 
-    deleteDeployment(id: number): Observable<EntityResponseType> {
-        return this.http.delete<any>(`${this.kubernetesUrl}/deleteDeployment/${id}`);
-    }
+    // deleteDeployment(id: number): Observable<EntityResponseType> {
+    //     return this.http.delete<any>(`${this.kubernetesUrl}/deleteDeployment/${id}`);
+    // }
 
     update(flow: IFlow): Observable<EntityResponseType> {
         return this.http.put<IFlow>(this.resourceUrl, flow, { observe: 'response' });

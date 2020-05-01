@@ -34,19 +34,19 @@ export class FlowDeleteDialogComponent {
                 this.message = 'Active flow can not be deleted. Please stop the flow before deleting.';
                 this.disableDelete = true;
             } else {
-                this.flowService.deleteDeployment(id).subscribe(deletedDeployment => {
-                    console.log(deletedDeployment);
+                // this.flowService.deleteDeployment(id).subscribe(deletedDeployment => {
+                //     console.log(deletedDeployment);
 
-                    this.flowService.delete(id).subscribe(r => {
-                        this.router.navigate(['/']);
-                        this.activeModal.dismiss(true);
-                    });
-                });
-
-                // this.flowService.delete(id).subscribe(r => {
-                //     this.router.navigate(['/']);
-                //     this.activeModal.dismiss(true);
+                //     this.flowService.delete(id).subscribe(r => {
+                //         this.router.navigate(['/']);
+                //         this.activeModal.dismiss(true);
+                //     });
                 // });
+
+                this.flowService.delete(id).subscribe(r => {
+                    this.router.navigate(['/']);
+                    this.activeModal.dismiss(true);
+                });
             }
         });
     }

@@ -18,10 +18,10 @@ public class KubernetesResource {
 	private KubernetesService ks;
 	
 	@GetMapping(path = "/kubernetes/startDeployment/{id}/{replicas}", produces = "application/json")
-	public String deployDeployment(@PathVariable String id, @PathVariable Integer replicas) {
-		Deployment deployment = ks.createDeployment(id, replicas, true);
+	public void deployDeployment(@PathVariable String id, @PathVariable Integer replicas) {
+		Deployment deployment = ks.createDeployment(id, replicas);
 		
-		return ks.deployDeployment(deployment, id);
+		ks.deployDeployment(deployment, id);
 	}
 	
 	@DeleteMapping(path = "/kubernetes/deleteDeployment/{id}", produces = "application/json")

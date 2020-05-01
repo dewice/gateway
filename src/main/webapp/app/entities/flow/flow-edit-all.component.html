@@ -122,6 +122,10 @@
 								<option [ngValue]="false">false</option>
 							</select>
 						</div>
+						<div *ngIf="flow.loadBalancing == true" class="form-group w-25">
+							<label class="form-control-label" for="field_instances">Instances</label>
+							<input type="text" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
+						</div>
 						<div class="form-group" *ngIf="!singleGateway">
 							<label class="form-control-label" for="field_gateway">Gateway</label>
 							<select class="form-control" id="field_gateway" *ngIf="flow" formControlName="gateway">

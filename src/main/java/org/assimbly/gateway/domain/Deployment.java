@@ -93,12 +93,10 @@ public class Deployment implements Serializable {
 		return kind;
 	}
 	
-	@Transient
 	public void setMetaData(Map<String, String> metadata) {
 		this.metadata = metadata;
 	}
 	
-	@Transient
 	public void addMetaData(String key, String value) {
 		Object add = metadata.get(key) != null ? metadata.replace(key, value) : metadata.put(key, value);
 	}
@@ -113,7 +111,6 @@ public class Deployment implements Serializable {
 		return this.spec;
 	}
 	
-	@Transient
 	public void addToContainers(String key, Object value) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> spec = (HashMap<String, Object>) template.get("spec");
@@ -123,7 +120,6 @@ public class Deployment implements Serializable {
 		Object add = keyValues.get(key) != null ? keyValues.replace(key, value) : keyValues.put(key, value);
 	}
 	
-	@Transient
 	public void deleteFromContainers(String key) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> spec = (HashMap<String, Object>) template.get("spec");
@@ -133,7 +129,6 @@ public class Deployment implements Serializable {
 		keyValues.remove(key);
 	}
 	
-	@Transient
 	public void addToMatchLabels(String key, Object value) {
 		HashMap<String, Object> selector = (HashMap<String, Object>) this.spec.get("selector");
 		HashMap<String, Object> matchlabels = (HashMap<String, Object>) selector.get("matchLabels");
@@ -141,7 +136,6 @@ public class Deployment implements Serializable {
 		Object add = matchlabels.get(key) != null ? matchlabels.replace(key, value) : matchlabels.put(key, value);
 	}
 	
-	@Transient
 	public void addToLabels(String key, Object value) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> matchlabels = (HashMap<String, Object>) template.get("metadata");
@@ -151,7 +145,6 @@ public class Deployment implements Serializable {
 		
 	}
 	
-	@Transient
 	public void setSpec(String key, Object value) {
 		spec.put(key, value);
 	}
@@ -162,23 +155,19 @@ public class Deployment implements Serializable {
 		return args;
 	}
 	
-	@Transient
 	public void setArgs(List<String> args) {
 		this.args = args;
 	}
 	
-	@Transient
 	public void addArgs(String arg) {
 		Object add = this.args.contains(arg) ? this.args.set(args.indexOf(arg), arg) : this.args.add(arg);
 	}
 	
-	@Transient
 	public void updateArgs() {
 		deleteFromContainers("args");
 		addToContainers("args", getArgs());
 	}
 	
-	@Transient
 	public void removeArg(String arg) {
 		this.args.remove(arg);
 	}
@@ -192,7 +181,6 @@ public class Deployment implements Serializable {
 		this.name = name;
 	}
 	
-	@Transient
 	public void updateName() {
 		addToLabels("app", name);
 		addToMatchLabels("app", name);
@@ -202,7 +190,6 @@ public class Deployment implements Serializable {
 		addArgs("--spring.application.name=" + name);
 	}
 	
-	@Transient
 	public void setPort(int port) {
 		addToContainers("ports", new ArrayList<HashMap<String, Object>>(){{
 			add(new HashMap<String, Object>() {{
@@ -226,8 +213,13 @@ public class Deployment implements Serializable {
 		return url;
 	}
 	
-	@Transient
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	
+	@Override
+	@Transient
+	public String toString() {
+		return this.name;
 	}
 }
