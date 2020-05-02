@@ -16,7 +16,7 @@
 
 eureka:
   client:
-    enabled: false
+    enabled: true
     healthcheck:
       enabled: true
     fetch-registry: true
@@ -40,8 +40,13 @@ eureka:
 ribbon:
   eureka:
     enabled: true
+  ConnectTimeout: 10000
+  ReadTimeout: 10000
 # See http://cloud.spring.io/spring-cloud-netflix/spring-cloud-netflix.html
 zuul: # those values must be configured depending on the application specific needs
+  ribbon:
+    eager-load:
+      enabled: true
   sensitive-headers: Cookie,Set-Cookie #see https://github.com/spring-cloud/spring-cloud-netflix/issues/3126
   host:
     max-total-connections: 1000
@@ -57,7 +62,7 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 10000
+            timeoutInMilliseconds: 40000
 
 management:
   endpoints:
@@ -204,7 +209,6 @@ application:
     name: default
     base-directory: default
   cluster:
-    enabled: true
     deploymentName: deployment
     deploymentUrl: http://192.168.19.152:8000/apis/apps/v1/namespaces/default/deployments
     

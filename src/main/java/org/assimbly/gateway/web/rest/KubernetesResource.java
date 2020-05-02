@@ -34,9 +34,13 @@ public class KubernetesResource {
 		return ks.checkCluster();
 	}
 	
+	@GetMapping(path = "/kubernetes/checkEureka", produces = "application/json")
+	public boolean checkEureka() {
+		return ks.checkEureka();
+	}
+	
 	@DeleteMapping(path = "/kubernetes/deleteDeployment/{id}", produces = "application/json")
 	public String deleteDeployment(@PathVariable String id) {
-		
 		return ks.deleteDeployment(id);
 	}
 }

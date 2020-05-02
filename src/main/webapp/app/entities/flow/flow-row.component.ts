@@ -592,22 +592,41 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
         this.flowService.getConfiguration(this.flow.id).subscribe(
             data => {
-                this.flowService.setConfiguration(this.flow.id, data.body).subscribe(data2 => {
-                    this.flowService.start(this.flow.id).subscribe(
-                        response => {
-                            if (response.status === 200) {
-                                // this.setFlowStatus('started');
+                if (this.flow.distributed == true) {
+                    this.flowService.setDistributedConfiguration(this.flow.id, data.body).subscribe(data2 => {
+                        this.flowService.distributedStart(this.flow.id).subscribe(
+                            response => {
+                                if (response.status === 200) {
+                                    // this.setFlowStatus('started');
+                                }
+                                this.disableActionBtns = false;
+                            },
+                            err => {
+                                this.getFlowLastError(this.flow.id, 'Start', err.error);
+                                this.isFlowStatusOK = false;
+                                this.flowStatusError = `Flow with id=${this.flow.id} is not started.`;
+                                this.disableActionBtns = false;
                             }
-                            this.disableActionBtns = false;
-                        },
-                        err => {
-                            this.getFlowLastError(this.flow.id, 'Start', err.error);
-                            this.isFlowStatusOK = false;
-                            this.flowStatusError = `Flow with id=${this.flow.id} is not started.`;
-                            this.disableActionBtns = false;
-                        }
-                    );
-                });
+                        );
+                    });
+                } else {
+                    this.flowService.setConfiguration(this.flow.id, data.body).subscribe(data2 => {
+                        this.flowService.start(this.flow.id).subscribe(
+                            response => {
+                                if (response.status === 200) {
+                                    // this.setFlowStatus('started');
+                                }
+                                this.disableActionBtns = false;
+                            },
+                            err => {
+                                this.getFlowLastError(this.flow.id, 'Start', err.error);
+                                this.isFlowStatusOK = false;
+                                this.flowStatusError = `Flow with id=${this.flow.id} is not started.`;
+                                this.disableActionBtns = false;
+                            }
+                        );
+                    });
+                }
             },
             err => {
                 this.getFlowLastError(this.flow.id, 'Start', err.error);

@@ -37,19 +37,23 @@ public class KubernetesService {
 	private final Environment environment;
 	private final String depName;
 	private final String depUrl;
+	private final boolean eureka;
 	private boolean needsSaving;
 	
 	public KubernetesService(Environment env) {
 		this.environment = env;
 		this.depName = environment.getProperty("application.cluster.deploymentName");
 		this.depUrl = environment.getProperty("application.cluster.deploymentUrl");
+		this.eureka = Boolean.parseBoolean(environment.getProperty("eureka.client.enabled"));
 		
 		this.headers = new HttpHeaders();
 		this.headers.setContentType(MediaType.APPLICATION_JSON);
 		this.needsSaving = true;
 	}
 
-	// Creates a new kubernetes deployment
+	/*
+	 * Creates a new kubernetes deployment
+	 */ 
 	public Deployment createDeployment(String id, Integer instances) {
 		
 		Deployment dep = new Deployment();
@@ -82,7 +86,9 @@ public class KubernetesService {
 		return dep;
 	}
 	
-	// Deploys deployment
+	/*
+	 * Deploys deployment
+	 */ 
 	public void deployDeployment(Deployment deployment, String id) {
 		
 		// Update current deployment
@@ -116,7 +122,10 @@ public class KubernetesService {
 		// Return the current updated deployment
 //		return put_answer.getBody();
 	}
-	
+
+	/*
+	 * 
+	 */
 	public String deleteDeployment(String flowId) {
 		Optional<Flow> flow = flowRepository.findById(Long.parseLong(flowId));
 		
@@ -140,6 +149,9 @@ public class KubernetesService {
 		return "DeploymentFlow not found";
 	}
 	
+	/*
+	 * 
+	 */
 	public boolean checkCluster() {
 		String clusterUrl = "";
 		
@@ -162,5 +174,13 @@ public class KubernetesService {
 		}
 		
 	}
+	
+	/*
+	 * 
+	 */
+	public boolean checkEureka() {
+		return this.eureka;
+	}
+	
 }
 

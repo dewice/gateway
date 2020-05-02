@@ -62,6 +62,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     savingFlowSuccessMessage = 'Flow successfully saved';
     finished = false;
     clusterStatus: boolean;
+    eurekaEnabled: boolean;
     // distributed: boolean;
     // loadBalancing: boolean;
 
@@ -167,9 +168,6 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.isSaving = false;
         this.createRoute = 0;
         this.setPopoverMessages();
-        this.flowService.checkCluster().subscribe(response => {
-            this.clusterStatus = response;
-        });
 
         this.subscription = this.route.params.subscribe(params => {
             if (params['clone']) {
@@ -189,8 +187,10 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             this.serviceService.getAllServices(),
             this.headerService.getAllHeaders(),
             this.gatewayService.query(),
-            this.flowService.getGatewayName()
-        ).subscribe(([wikiDocUrl, camelDocUrl, services, headers, gateways, gatewayName]) => {
+            this.flowService.getGatewayName(),
+            this.flowService.checkCluster(),
+            this.flowService.checkEureka()
+        ).subscribe(([wikiDocUrl, camelDocUrl, services, headers, gateways, gatewayName, cluster_status, eurekaStatus]) => {
             this.wikiDocUrl = wikiDocUrl.body;
 
             this.camelDocUrl = camelDocUrl.body;
@@ -204,6 +204,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             this.gateways = gateways.body;
             this.singleGateway = this.gateways.length === 1;
             this.gatewayName = gatewayName.body;
+            this.clusterStatus = cluster_status;
+            this.eurekaEnabled = eurekaStatus;
 
             if (this.singleGateway) {
                 this.indexGateway = 0;

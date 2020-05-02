@@ -16,6 +16,7 @@ import * as SockJS from 'sockjs-client';
 import * as Stomp from 'webstomp-client';
 import { tap } from 'rxjs/operators';
 import { CSRFService } from 'app/core';
+import { GatewayRoutesService } from 'app/admin/gateway/gateway-routes.service';
 
 import { AuthServerProvider } from 'app/core/auth/auth-jwt.service';
 
@@ -26,6 +27,7 @@ type EntityArrayResponseType = HttpResponse<IFlow[]>;
 export class FlowService {
     public resourceUrl = SERVER_API_URL + 'api/flows';
     public connectorUrl = SERVER_API_URL + 'api/connector';
+    public microserviceConnectorUrl = SERVER_API_URL + 'services/connector/api/connector';
     public environmentUrl = SERVER_API_URL + 'api/environment';
     public kubernetesUrl = SERVER_API_URL + 'api/kubernetes';
 
@@ -74,6 +76,10 @@ export class FlowService {
         return this.http.get<boolean>(`${this.kubernetesUrl}/checkCluster`);
     }
 
+    checkEureka(): Observable<boolean> {
+        return this.http.get<boolean>(`${this.kubernetesUrl}/checkEureka`);
+    }
+
     update(flow: IFlow): Observable<EntityResponseType> {
         return this.http.put<IFlow>(this.resourceUrl, flow, { observe: 'response' });
     }
@@ -114,6 +120,24 @@ export class FlowService {
         }
     }
 
+    setDistributedConfiguration(id: number, xmlconfiguration: string, header?: string): Observable<any> {
+        if (!!header) {
+            const options = {
+                headers: new HttpHeaders({ observe: 'response', responseType: 'text', Accept: 'application/xml' })
+            };
+            return this.http.post(
+                `${this.microserviceConnectorUrl}/${this.gatewayid}/setflowconfiguration/${id}`,
+                xmlconfiguration,
+                options
+            );
+        } else {
+            return this.http.post(`${this.microserviceConnectorUrl}/${this.gatewayid}/setflowconfiguration/${id}`, xmlconfiguration, {
+                observe: 'response',
+                responseType: 'text'
+            });
+        }
+    }
+
     saveFlows(id: number, xmlconfiguration: string, header: string): Observable<EntityResponseType> {
         const options = {
             headers: new HttpHeaders({ Accept: 'application/xml' })
@@ -130,6 +154,13 @@ export class FlowService {
 
     start(id: number): Observable<HttpResponse<any>> {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/start/${id}`, { observe: 'response', responseType: 'text' });
+    }
+
+    distributedStart(id: number): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/start/${id}`, {
+            observe: 'response',
+            responseType: 'text'
+        });
     }
 
     pause(id: number): Observable<HttpResponse<any>> {

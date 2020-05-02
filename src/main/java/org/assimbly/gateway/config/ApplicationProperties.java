@@ -94,17 +94,9 @@ public class ApplicationProperties {
     
     public static class Cluster {
     	
-    	private boolean enabled;
 		private String deploymentName;
     	private String deploymentUrl;
     	
-		public boolean isEnabled() {
-			return enabled;
-		}
-
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
     	
     	public String getDeploymentname() {
 			return deploymentName;
