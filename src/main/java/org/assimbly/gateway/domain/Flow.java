@@ -326,7 +326,6 @@ public class Flow implements Serializable {
             ", instances=" + getInstances() +
             ", logLevel='" + getLogLevel() + "'" +
             ", distributed='" + isDistributed() + "'" +
-//            ", deployment_id='" + getDeployment_id() + "'" +
             "}";
     }
 }
