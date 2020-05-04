@@ -25,11 +25,12 @@ type EntityArrayResponseType = HttpResponse<IFlow[]>;
 
 @Injectable({ providedIn: 'root' })
 export class FlowService {
+    deploymentName = 'deployment';
     public resourceUrl = SERVER_API_URL + 'api/flows';
-    public connectorUrl = SERVER_API_URL + 'api/connector';
-    public microserviceConnectorUrl = SERVER_API_URL + 'services/connector/api/connector';
-    public environmentUrl = SERVER_API_URL + 'api/environment';
     public kubernetesUrl = SERVER_API_URL + 'api/kubernetes';
+    public connectorUrl = SERVER_API_URL + 'api/connector';
+    public microserviceConnectorUrl = SERVER_API_URL + `services/${this.deploymentName}`;
+    public environmentUrl = SERVER_API_URL + 'api/environment';
 
     private routerSubscription: Subscription | null = null;
     private connectionSubject: ReplaySubject<void> = new ReplaySubject(1);
@@ -76,10 +77,6 @@ export class FlowService {
         return this.http.get<boolean>(`${this.kubernetesUrl}/checkCluster`);
     }
 
-    checkEureka(): Observable<boolean> {
-        return this.http.get<boolean>(`${this.kubernetesUrl}/checkEureka`);
-    }
-
     update(flow: IFlow): Observable<EntityResponseType> {
         return this.http.put<IFlow>(this.resourceUrl, flow, { observe: 'response' });
     }
@@ -120,21 +117,25 @@ export class FlowService {
         }
     }
 
-    setDistributedConfiguration(id: number, xmlconfiguration: string, header?: string): Observable<any> {
+    setDistributedConfiguration(id: number, xmlconfiguration: string, deploymentId: String, header?: string): Observable<any> {
         if (!!header) {
             const options = {
                 headers: new HttpHeaders({ observe: 'response', responseType: 'text', Accept: 'application/xml' })
             };
             return this.http.post(
-                `${this.microserviceConnectorUrl}/${this.gatewayid}/setflowconfiguration/${id}`,
+                `${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/setflowconfiguration/${id}`,
                 xmlconfiguration,
                 options
             );
         } else {
-            return this.http.post(`${this.microserviceConnectorUrl}/${this.gatewayid}/setflowconfiguration/${id}`, xmlconfiguration, {
-                observe: 'response',
-                responseType: 'text'
-            });
+            return this.http.post(
+                `${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/setflowconfiguration/${id}`,
+                xmlconfiguration,
+                {
+                    observe: 'response',
+                    responseType: 'text'
+                }
+            );
         }
     }
 
@@ -156,8 +157,8 @@ export class FlowService {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/start/${id}`, { observe: 'response', responseType: 'text' });
     }
 
-    distributedStart(id: number): Observable<HttpResponse<any>> {
-        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/start/${id}`, {
+    distributedStart(id: number, deploymentId: String): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/flow/start/${id}`, {
             observe: 'response',
             responseType: 'text'
         });
@@ -177,6 +178,13 @@ export class FlowService {
 
     stop(id: number): Observable<HttpResponse<any>> {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/stop/${id}`, { observe: 'response', responseType: 'text' });
+    }
+
+    distributedStop(id: number, deploymentId: String): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/flow/stop/${id}`, {
+            observe: 'response',
+            responseType: 'text'
+        });
     }
 
     getFlowStatus(id: number): Observable<any> {

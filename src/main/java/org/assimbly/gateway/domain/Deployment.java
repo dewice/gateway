@@ -48,6 +48,7 @@ public class Deployment implements Serializable {
 	public Deployment() {}
 	
 	@Transient
+	@SuppressWarnings("unchecked")
 	private Map<String, Object> spec = new HashMap<String, Object>() {{		
 		put("selector", new HashMap<String, Object>() {{
 			put("matchLabels", new HashMap<String, Object>());
@@ -111,24 +112,41 @@ public class Deployment implements Serializable {
 		return this.spec;
 	}
 	
-	public void addToContainers(String key, Object value) {
+	@Transient
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> getNestedSpec() {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
-		HashMap<String, Object> spec = (HashMap<String, Object>) template.get("spec");
-		ArrayList<HashMap<String, Object>> containers = (ArrayList<HashMap<String, Object>>) spec.get("containers");
+		return (HashMap<String, Object>) template.get("spec");
+	}
+	
+	@Transient
+	@SuppressWarnings("unchecked")
+	public ArrayList<HashMap<String, Object>> getContainer() {
+		HashMap<String, Object> spec = getNestedSpec();
+		return (ArrayList<HashMap<String, Object>>) spec.get("containers");
+	}
+	
+	public void addToSpec(String key, Object value) {
+		HashMap<String, Object> spec = getNestedSpec();
+		
+		Object add = spec.get(key) != null ? spec.replace(key, value) : spec.put(key, value);
+	}
+	
+	public void addToContainers(String key, Object value) {
+		ArrayList<HashMap<String, Object>> containers = getContainer();
 		HashMap<String, Object> keyValues = containers.get(0);
 		
 		Object add = keyValues.get(key) != null ? keyValues.replace(key, value) : keyValues.put(key, value);
 	}
 	
 	public void deleteFromContainers(String key) {
-		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
-		HashMap<String, Object> spec = (HashMap<String, Object>) template.get("spec");
-		ArrayList<HashMap<String, Object>> containers = (ArrayList<HashMap<String, Object>>) spec.get("containers");
+		ArrayList<HashMap<String, Object>> containers = getContainer();
 		HashMap<String, Object> keyValues = containers.get(0);
 		
 		keyValues.remove(key);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addToMatchLabels(String key, Object value) {
 		HashMap<String, Object> selector = (HashMap<String, Object>) this.spec.get("selector");
 		HashMap<String, Object> matchlabels = (HashMap<String, Object>) selector.get("matchLabels");
@@ -136,6 +154,7 @@ public class Deployment implements Serializable {
 		Object add = matchlabels.get(key) != null ? matchlabels.replace(key, value) : matchlabels.put(key, value);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addToLabels(String key, Object value) {
 		HashMap<String, Object> template = (HashMap<String, Object>) this.spec.get("template");
 		HashMap<String, Object> matchlabels = (HashMap<String, Object>) template.get("metadata");
@@ -143,6 +162,28 @@ public class Deployment implements Serializable {
 	
 		Object add = labels.get(key) != null ? labels.replace(key, value) : labels.put(key, value);
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void addVolumeProperties(String name, String mountPath) {
+		addToContainers("volumeMounts", new ArrayList<HashMap<String, Object>>(){{
+			add(new HashMap<String, Object>() {{
+				put("name", name);
+				put("mountPath", mountPath);
+			}});
+		}});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void addVolume(String name, String path) {
+		addToSpec("volumes", new ArrayList<HashMap<String, Object>>(){{
+			add(new HashMap<String, Object>() {{
+				put("name", name);
+				put("hostPath", new HashMap<String, Object>() {{ 
+					put("path", path);
+				}});
+			}});
+		}});
 	}
 	
 	public void setSpec(String key, Object value) {
@@ -190,6 +231,7 @@ public class Deployment implements Serializable {
 		addArgs("--spring.application.name=" + name);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void setPort(int port) {
 		addToContainers("ports", new ArrayList<HashMap<String, Object>>(){{
 			add(new HashMap<String, Object>() {{

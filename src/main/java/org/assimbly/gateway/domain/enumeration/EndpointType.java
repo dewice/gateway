@@ -657,7 +657,7 @@ public enum EndpointType {
 
 	SMTP("SMTP"),
 
-	SMTPS3("SMTPS3"),
+	SMTPS("SMTPS"),
 	
 	SOLR("SOLR"),
 	

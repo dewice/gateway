@@ -9,6 +9,8 @@ import { Account } from 'app/core/user/account.model';
 export class AccountService {
     private userIdentity: any;
     private authenticated = false;
+    private kubernetesUrl = SERVER_API_URL + 'api/kubernetes';
+    private eurekaStatus: boolean;
     private authenticationState = new Subject<any>();
 
     constructor(private http: HttpClient) {}
@@ -75,6 +77,7 @@ export class AccountService {
                 if (account) {
                     this.userIdentity = account;
                     this.authenticated = true;
+                    this.checkEureka().subscribe(eurekaCheck => (this.eurekaStatus = eurekaCheck));
                 } else {
                     this.userIdentity = null;
                     this.authenticated = false;
@@ -92,6 +95,14 @@ export class AccountService {
 
     isAuthenticated(): boolean {
         return this.authenticated;
+    }
+
+    checkEureka(): Observable<boolean> {
+        return this.http.get<boolean>(`${this.kubernetesUrl}/checkEureka`);
+    }
+
+    isEurekaEnabled(): boolean {
+        return this.eurekaStatus;
     }
 
     isIdentityResolved(): boolean {

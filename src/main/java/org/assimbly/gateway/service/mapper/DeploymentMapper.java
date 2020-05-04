@@ -22,6 +22,8 @@ public interface DeploymentMapper extends EntityMapper<DeploymentDTO, Deployment
     @Mapping(target = "port", ignore = true)
     @Mapping(target = "url", ignore = true)
     @Mapping(target = "spec", ignore = true)
+    @Mapping(target = "nestedSpec", ignore = true)
+    @Mapping(target = "container", ignore = true)
     Deployment toEntity(DeploymentDTO deploymentDTO);
 
     default Deployment fromId(Long id) {

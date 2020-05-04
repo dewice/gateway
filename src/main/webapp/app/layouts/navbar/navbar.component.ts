@@ -5,6 +5,7 @@ import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { VERSION } from 'app/app.constants';
 import { AccountService, LoginModalService, LoginService } from 'app/core';
 import { ProfileService } from '../profiles/profile.service';
+import { FlowService } from '../../entities/flow/flow.service';
 
 @Component({
     selector: 'jhi-navbar',
@@ -24,7 +25,8 @@ export class NavbarComponent implements OnInit {
         private accountService: AccountService,
         private loginModalService: LoginModalService,
         private profileService: ProfileService,
-        private router: Router
+        private router: Router,
+        private flowService: FlowService
     ) {
         this.version = VERSION ? 'v' + VERSION : '';
         this.isNavbarCollapsed = true;
@@ -43,6 +45,10 @@ export class NavbarComponent implements OnInit {
 
     isAuthenticated() {
         return this.accountService.isAuthenticated();
+    }
+
+    isEurekaEnabled() {
+        return this.accountService.isEurekaEnabled();
     }
 
     login() {

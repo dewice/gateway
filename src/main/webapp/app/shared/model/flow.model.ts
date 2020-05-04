@@ -30,7 +30,7 @@ export class Flow implements IFlow {
         public type?: string,
         public distributed?: boolean,
         public loadBalancing?: boolean,
-        public deployment_id?: String,
+        public deploymentId?: number,
         public instances?: number,
         public logLevel?: LogLevelType,
         public gatewayId?: number,

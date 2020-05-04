@@ -79,9 +79,9 @@
                         <span>Administration</span>
                     </span>
                 </a>
-                <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="admin-menu">
+                <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="admin-menu" [ngSwitch]="isEurekaEnabled()">
                     <li>
-                        <a class="dropdown-item" routerLink="admin/gateway" routerLinkActive="active" (click)="collapseNavbar()">
+                        <a *ngSwitchCase="true" class="dropdown-item" routerLink="admin/gateway" routerLinkActive="active" (click)="collapseNavbar()">
                             <fa-icon icon="road" fixedWidth="true"></fa-icon>
                             <span>Gateway</span>
                         </a>

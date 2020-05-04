@@ -20,6 +20,7 @@ import { ErrorEndpointService } from '../error-endpoint/';
 import { ServiceService } from '../service';
 import { HeaderService } from '../header';
 import { GatewayService } from '../gateway';
+import { AccountService } from 'app/core/auth/account.service';
 
 import { FormGroup, FormControl, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { EndpointType, typesLinks, Components } from '../../shared/camel/component-type';
@@ -62,9 +63,6 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     savingFlowSuccessMessage = 'Flow successfully saved';
     finished = false;
     clusterStatus: boolean;
-    eurekaEnabled: boolean;
-    // distributed: boolean;
-    // loadBalancing: boolean;
 
     gateways: Gateway[];
     configuredGateway: Gateway;
@@ -159,7 +157,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         public components: Components,
         private modalService: NgbModal,
         private headerPopupService: HeaderPopupService,
-        private servicePopupService: ServicePopupService
+        private servicePopupService: ServicePopupService,
+        private accountService: AccountService
     ) {
         this.toEndpoints = [new ToEndpoint()];
     }
@@ -188,9 +187,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             this.headerService.getAllHeaders(),
             this.gatewayService.query(),
             this.flowService.getGatewayName(),
-            this.flowService.checkCluster(),
-            this.flowService.checkEureka()
-        ).subscribe(([wikiDocUrl, camelDocUrl, services, headers, gateways, gatewayName, cluster_status, eurekaStatus]) => {
+            this.flowService.checkCluster()
+        ).subscribe(([wikiDocUrl, camelDocUrl, services, headers, gateways, gatewayName, checkCluster]) => {
             this.wikiDocUrl = wikiDocUrl.body;
 
             this.camelDocUrl = camelDocUrl.body;
@@ -204,8 +202,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             this.gateways = gateways.body;
             this.singleGateway = this.gateways.length === 1;
             this.gatewayName = gatewayName.body;
-            this.clusterStatus = cluster_status;
-            this.eurekaEnabled = eurekaStatus;
+            this.clusterStatus = checkCluster;
 
             if (this.singleGateway) {
                 this.indexGateway = 0;
@@ -223,8 +220,6 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                 this.flowService.find(id).subscribe(flow => {
                     if (flow) {
                         this.flow = flow.body;
-                        // this.distributed = flow.body.distributed;
-                        // this.loadBalancing = flow.body.loadBalancing;
                         if (this.singleGateway) {
                             this.flow.gatewayId = this.gateways[this.indexGateway].id;
                         }
@@ -380,6 +375,10 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                 }, 0);
             }
         });
+    }
+
+    isEurekaEnabled() {
+        return this.accountService.isEurekaEnabled();
     }
 
     clone() {
@@ -968,6 +967,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                             this.flowService.create(this.flow).subscribe(
                                 flowUpdated => {
                                     this.flow = flowUpdated.body;
+                                    console.log(this.flow);
                                     this.toEndpoints.forEach(toEndpoint => {
                                         toEndpoint.flowId = this.flow.id;
                                     });
