@@ -122,7 +122,6 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
         this.toEndpoints = this.flow.toEndpoints;
         this.getFromEndpoint(this.flow.fromEndpointId);
-        console.log(this.fromEndpoints);
         this.getToEndpoint();
 
         this.registerTriggeredAction();

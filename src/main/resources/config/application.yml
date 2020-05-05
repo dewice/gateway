@@ -209,7 +209,7 @@ application:
     name: default
     base-directory: default
   cluster:
-    deploymentName: deployment
+    deploymentName: deployment1
     deploymentUrl: http://192.168.19.152:8000/apis/apps/v1/namespaces/default/deployments
     
 hawtio:

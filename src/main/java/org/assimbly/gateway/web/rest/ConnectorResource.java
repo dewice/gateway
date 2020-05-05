@@ -7,6 +7,7 @@ import org.assimbly.connector.impl.CamelConnector;
 import org.assimbly.gateway.config.ApplicationProperties;
 import org.assimbly.gateway.config.ApplicationProperties.Gateway;
 import org.assimbly.gateway.config.environment.DBConfiguration;
+import org.assimbly.gateway.domain.Deployment;
 import org.assimbly.gateway.domain.Flow;
 import org.assimbly.gateway.event.FailureListener;
 import org.assimbly.gateway.repository.FlowRepository;
@@ -14,9 +15,14 @@ import org.assimbly.gateway.web.rest.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.net.URISyntaxException;
@@ -61,12 +67,19 @@ public class ConnectorResource {
 	
     @Autowired
     DBConfiguration assimblyDBConfiguration;
+    
+    @Autowired
+    RestTemplate restTemplate;
 
     @Autowired	
     private SimpMessageSendingOperations messagingTemplate;
+    
+    private HttpHeaders headers;
 
     public ConnectorResource(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
+		this.headers = new HttpHeaders();
+		this.headers.setContentType(MediaType.APPLICATION_JSON);
     }
     
     //configure connector (by gatewayid)
@@ -851,7 +864,8 @@ public class ConnectorResource {
 			e.printStackTrace();
 		}
 
-		//start flows with autostart
+		//start flows with autostart, is te fixen door ze door te sturen wanneer ze een deployment_id hebben :D
+    	// eg: httpRest template gebruiken om die configuratie naar de instanties door te sturen
        	List<Flow> flows = flowRepository.findAll();
 		
        	try {
@@ -860,8 +874,23 @@ public class ConnectorResource {
 	       			String configuration;
 	       			log.info("Autostart flow " + flow.getName() + " with id=" + flow.getId());
 					configuration = assimblyDBConfiguration.convertDBToFlowConfiguration(flow.getId(),"xml/application");
-					connector.setFlowConfiguration(flow.getId().toString(),"application/xml", configuration);
-					connector.startFlow(flow.getId().toString());
+					
+					if(flow.isDistributed()) {
+						// Later bijwerken om meerdere instanties van een flow te supporten
+//						Deployment deployment = flow.getDeployment();
+//						String deploymentName = deployment.getName();
+						HttpEntity<String> get_entity = new HttpEntity<String>(headers);
+						ResponseEntity<String> request = restTemplate.exchange("http://localhost:8080/services/deployment/api/connector/1/isStarted", HttpMethod.GET, get_entity, String.class);
+						String isStarted = request.getBody();
+						System.out.println("\n\n\n\n\n\n\n\n\n");
+						System.out.println(isStarted);
+						System.out.println("\n\n\n\n\n\n\n\n\n");
+					}
+					
+					else {
+						connector.setFlowConfiguration(flow.getId().toString(),"application/xml", configuration);
+						connector.startFlow(flow.getId().toString());
+					}
 	       		}
 	       	}
     	} catch (Exception e) {

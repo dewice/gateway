@@ -967,7 +967,6 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                             this.flowService.create(this.flow).subscribe(
                                 flowUpdated => {
                                     this.flow = flowUpdated.body;
-                                    console.log(this.flow);
                                     this.toEndpoints.forEach(toEndpoint => {
                                         toEndpoint.flowId = this.flow.id;
                                     });
