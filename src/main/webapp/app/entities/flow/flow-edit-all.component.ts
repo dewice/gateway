@@ -179,6 +179,22 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.registerChangeInFlows();
     }
 
+    setDistributed() {
+        if (this.flow.distributed == false) {
+            console.log('hello world');
+            this.flow.loadBalancing = false;
+        }
+    }
+
+    setLoadBalanced(bool: any) {
+        console.log(bool);
+        if (bool == 'true') {
+            this.flow.loadBalancing = true;
+        } else {
+            this.flow.loadBalancing = false;
+        }
+    }
+
     load(id, isCloning?: boolean) {
         forkJoin(
             this.flowService.getWikiDocUrl(),
