@@ -1024,6 +1024,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                 }
             );
         }
+        this.changeDetectorRef.detectChanges();
     }
 
     setDataFromForm() {
