@@ -117,16 +117,16 @@
 						</div> -->
 						<div class="form-group w-25">
 							<label class="form-control-label" for="field_distributed">Distributed</label>
-							<select type="text" class="form-control" id="field_distributed" *ngIf="flow" formControlName="distributed" [(ngModel)]="flow.distributed" (change)="setDistributed()" >
+							<select type="text" class="form-control" id="field_distributed" *ngIf="flow" formControlName="distributed" [ngModel]="flowDistributed" (ngModelChange)="setDistributed($event)">
 								<option [ngValue]="true">true</option>
 								<option [ngValue]="false">false</option>
 							</select>
 						</div>
 						<div *ngIf="flow.distributed == true" class="form-group w-25">
 							<label class="form-control-label" for="field_loadBalancing">LoadBalancing</label>
-							<select type="text" class="form-control" id="field_loadBalancing" *ngIf="flow" [(ngModel)]="flow.loadBalancing" formControlName="loadBalancing" (change)="setLoadBalanced(selectField.value)" #selectField>
-								<option value="true">true</option>
-								<option value="false">false</option>
+							<select type="text" class="form-control" id="field_loadBalancing" *ngIf="flow" [(ngModel)]="flow.loadBalancing" formControlName="loadBalancing">
+								<option [ngValue]="true">true</option>
+								<option [ngValue]="false">false</option>
 							</select>
 						</div>
 						<div *ngIf="flow.loadBalancing == true" class="form-group w-25">

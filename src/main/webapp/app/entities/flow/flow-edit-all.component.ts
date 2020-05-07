@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Observable, Subscription } from 'rxjs';
@@ -158,7 +158,8 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         private modalService: NgbModal,
         private headerPopupService: HeaderPopupService,
         private servicePopupService: ServicePopupService,
-        private accountService: AccountService
+        private accountService: AccountService,
+        private changeDetectorRef: ChangeDetectorRef
     ) {
         this.toEndpoints = [new ToEndpoint()];
     }
@@ -179,20 +180,17 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.registerChangeInFlows();
     }
 
-    setDistributed() {
+    public get flowDistributed() {
         if (this.flow.distributed == false) {
-            console.log('hello world');
             this.flow.loadBalancing = false;
         }
+        return this.flow.distributed;
     }
 
-    setLoadBalanced(bool: any) {
-        console.log(bool);
-        if (bool == 'true') {
-            this.flow.loadBalancing = true;
-        } else {
-            this.flow.loadBalancing = false;
-        }
+    public setDistributed(bool: boolean) {
+        this.flow.distributed = bool;
+
+        this.changeDetectorRef.detectChanges();
     }
 
     load(id, isCloning?: boolean) {
