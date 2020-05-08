@@ -594,7 +594,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 console.log(data);
                 if (this.flow.distributed == true) {
                     this.flowService.setDistributedConfiguration(this.flow.id, data.body, this.flow.deploymentId).subscribe(data2 => {
-                        this.flowService.distributedStart(this.flow.id, String(this.flow.deploymentId)).subscribe(
+                        this.flowService.distributedStart(this.flow.id, this.flow.deploymentId).subscribe(
                             response => {
                                 if (response.status === 200) {
                                     this.setFlowStatus('started');
@@ -726,7 +726,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         this.disableActionBtns = true;
 
         if (this.flow.distributed == true) {
-            this.flowService.distributedStop(this.flow.id, String(this.flow.deploymentId)).subscribe(
+            this.flowService.distributedStop(this.flow.id, this.flow.deploymentId).subscribe(
                 response => {
                     if (response.status === 200) {
                         this.setFlowStatus('stopped');

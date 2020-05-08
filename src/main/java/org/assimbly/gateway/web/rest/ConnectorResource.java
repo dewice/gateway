@@ -76,7 +76,7 @@ public class ConnectorResource {
     public ConnectorResource(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
 		this.headers = new HttpHeaders();
-		this.headers.setContentType(MediaType.APPLICATION_XML);
+		this.headers.setContentType(MediaType.APPLICATION_JSON);
     }
     
     //configure connector (by gatewayid)

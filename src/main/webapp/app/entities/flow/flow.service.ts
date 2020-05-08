@@ -156,8 +156,8 @@ export class FlowService {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/start/${id}`, { observe: 'response', responseType: 'text' });
     }
 
-    distributedStart(id: number, deploymentId: String): Observable<HttpResponse<any>> {
-        return this.http.get(`${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/flow/start/${id}`, {
+    distributedStart(id: number, deploymentId: number): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/start/${id}/deployment/${deploymentId}`, {
             observe: 'response',
             responseType: 'text'
         });
@@ -179,8 +179,8 @@ export class FlowService {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/stop/${id}`, { observe: 'response', responseType: 'text' });
     }
 
-    distributedStop(id: number, deploymentId: String): Observable<HttpResponse<any>> {
-        return this.http.get(`${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/flow/stop/${id}`, {
+    distributedStop(id: number, deploymentId: number): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/stop/${id}/deployment/${deploymentId}`, {
             observe: 'response',
             responseType: 'text'
         });
