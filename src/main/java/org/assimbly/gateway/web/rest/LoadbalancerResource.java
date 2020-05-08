@@ -56,8 +56,8 @@ public class LoadbalancerResource {
 		this.headers.add("Authorization", jwt);
 		JSONObject JSONDeploy = new JSONObject(configuration);
 		HttpEntity<String> post_entity = new HttpEntity<>(JSONDeploy.toString(), this.headers);
-//		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances(depName + deploymentId.toString());
-		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances("connector");
+		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances(depName + deploymentId.toString());
+//		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances("connector");
 		
 		if(serviceInstaces.size() < 1)
 		{
@@ -96,8 +96,8 @@ public class LoadbalancerResource {
 	{
 		this.headers.add("Authorization", jwt);
 		HttpEntity<String> get_entity = new HttpEntity<>("parameters", this.headers);
-//		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances(depName + deploymentId.toString());
-		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances("connector");
+		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances(depName + deploymentId.toString());
+//		List<ServiceInstance> serviceInstaces = this.discoveryClient.getInstances("connector");
 		
 		if(serviceInstaces.size() < 1)
 		{
@@ -136,8 +136,8 @@ public class LoadbalancerResource {
 	{
 		this.headers.add("Authorization", jwt);
 		HttpEntity<String> get_entity = new HttpEntity<>("parameters", this.headers);
-//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
-		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
+		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
+//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
 		
 		if(serviceInstances.size() < 1)
 		{

@@ -58,6 +58,16 @@ public class KubernetesService {
 		
 		Deployment dep = new Deployment();
 		
+		// Set DeploymentId to existing id if flow and deployment already exist (for updating deployment)
+		flowRepository.findById(Long.parseLong(id)).ifPresent(x -> {
+			
+			if (x.getDeployment() != null)
+			{
+				Long depId = x.getDeployment().getId();
+				dep.setId(depId);
+			}
+		});
+		
 		// Save to database to auto-generate id, only for flow deployments
 		if (needsSaving == true) {
 			deploymentRepository.save(dep);
