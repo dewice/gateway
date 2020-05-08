@@ -95,7 +95,7 @@ public class KubernetesService {
 		
 		// Update current deployment
 		JSONObject JSONDeploy = new JSONObject(deployment);
-		HttpEntity<String> put_entity = new HttpEntity<String>(JSONDeploy.toString(),headers);
+		HttpEntity<String> put_entity = new HttpEntity<String>(JSONDeploy.toString(), headers);
 		String deploymentUrl = deployment.getUrl();
 		restTemplate.exchange(deploymentUrl, HttpMethod.PUT, put_entity, String.class);
 		

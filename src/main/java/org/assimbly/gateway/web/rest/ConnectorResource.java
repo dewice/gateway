@@ -7,7 +7,6 @@ import org.assimbly.connector.impl.CamelConnector;
 import org.assimbly.gateway.config.ApplicationProperties;
 import org.assimbly.gateway.config.ApplicationProperties.Gateway;
 import org.assimbly.gateway.config.environment.DBConfiguration;
-import org.assimbly.gateway.domain.Deployment;
 import org.assimbly.gateway.domain.Flow;
 import org.assimbly.gateway.event.FailureListener;
 import org.assimbly.gateway.repository.FlowRepository;
@@ -15,9 +14,7 @@ import org.assimbly.gateway.web.rest.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -79,7 +76,7 @@ public class ConnectorResource {
     public ConnectorResource(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
 		this.headers = new HttpHeaders();
-		this.headers.setContentType(MediaType.APPLICATION_JSON);
+		this.headers.setContentType(MediaType.APPLICATION_XML);
     }
     
     //configure connector (by gatewayid)
@@ -879,12 +876,12 @@ public class ConnectorResource {
 						// Later bijwerken om meerdere instanties van een flow te supporten
 //						Deployment deployment = flow.getDeployment();
 //						String deploymentName = deployment.getName();
-						HttpEntity<String> get_entity = new HttpEntity<String>(headers);
-						ResponseEntity<String> request = restTemplate.exchange("http://localhost:8080/services/deployment/api/connector/1/isStarted", HttpMethod.GET, get_entity, String.class);
-						String isStarted = request.getBody();
-						System.out.println("\n\n\n\n\n\n\n\n\n");
-						System.out.println(isStarted);
-						System.out.println("\n\n\n\n\n\n\n\n\n");
+//						HttpEntity<String> get_entity = new HttpEntity<String>(headers);
+//						ResponseEntity<String> request = restTemplate.exchange("http://localhost:8080/services/deployment/api/connector/1/isStarted", HttpMethod.GET, get_entity, String.class);
+//						String isStarted = request.getBody();
+//						System.out.println("\n\n\n\n\n\n\n\n\n");
+//						System.out.println(isStarted);
+//						System.out.println("\n\n\n\n\n\n\n\n\n");
 					}
 					
 					else {

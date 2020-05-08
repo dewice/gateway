@@ -25,11 +25,10 @@ type EntityArrayResponseType = HttpResponse<IFlow[]>;
 
 @Injectable({ providedIn: 'root' })
 export class FlowService {
-    deploymentName = 'deployment';
     public resourceUrl = SERVER_API_URL + 'api/flows';
     public kubernetesUrl = SERVER_API_URL + 'api/kubernetes';
     public connectorUrl = SERVER_API_URL + 'api/connector';
-    public microserviceConnectorUrl = SERVER_API_URL + `services/${this.deploymentName}`;
+    public microserviceConnectorUrl = SERVER_API_URL + `/api/broadcast/connector`;
     public environmentUrl = SERVER_API_URL + 'api/environment';
 
     private routerSubscription: Subscription | null = null;
@@ -117,19 +116,19 @@ export class FlowService {
         }
     }
 
-    setDistributedConfiguration(id: number, xmlconfiguration: string, deploymentId: String, header?: string): Observable<any> {
+    setDistributedConfiguration(id: number, xmlconfiguration: string, deploymentId: number, header?: string): Observable<any> {
         if (!!header) {
             const options = {
                 headers: new HttpHeaders({ observe: 'response', responseType: 'text', Accept: 'application/xml' })
             };
             return this.http.post(
-                `${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/setflowconfiguration/${id}`,
+                `${this.microserviceConnectorUrl}/${this.gatewayid}/setdistributedflowconfiguration/${id}/deployment/${deploymentId}`,
                 xmlconfiguration,
                 options
             );
         } else {
             return this.http.post(
-                `${this.microserviceConnectorUrl}${deploymentId}/api/connector/${this.gatewayid}/setflowconfiguration/${id}`,
+                `${this.microserviceConnectorUrl}/${this.gatewayid}/setdistributedflowconfiguration/${id}/deployment/${deploymentId}`,
                 xmlconfiguration,
                 {
                     observe: 'response',
