@@ -167,12 +167,33 @@ export class FlowService {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/pause/${id}`, { observe: 'response', responseType: 'text' });
     }
 
+    distributedPause(id: number, deploymentId: number): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/pause/${id}/deployment/${deploymentId}`, {
+            observe: 'response',
+            responseType: 'text'
+        });
+    }
+
     resume(id: number): Observable<HttpResponse<any>> {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/resume/${id}`, { observe: 'response', responseType: 'text' });
     }
 
+    distributedResume(id: number, deploymentId: number): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/resume/${id}/deployment/${deploymentId}`, {
+            observe: 'response',
+            responseType: 'text'
+        });
+    }
+
     restart(id: number): Observable<HttpResponse<any>> {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/restart/${id}`, { observe: 'response', responseType: 'text' });
+    }
+
+    distributedRestart(id: number, deploymentId: number): Observable<HttpResponse<any>> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/restart/${id}/deployment/${deploymentId}`, {
+            observe: 'response',
+            responseType: 'text'
+        });
     }
 
     stop(id: number): Observable<HttpResponse<any>> {

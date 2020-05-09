@@ -642,20 +642,38 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         this.flowStatus = 'Pausing';
         this.isFlowStatusOK = true;
         this.disableActionBtns = true;
-        this.flowService.pause(this.flow.id).subscribe(
-            response => {
-                if (response.status === 200) {
-                    // this.setFlowStatus('suspended');
+
+        if (this.flow.distributed == true) {
+            this.flowService.distributedPause(this.flow.id, this.flow.deploymentId).subscribe(
+                response => {
+                    if (response.status === 200) {
+                        this.setFlowStatus('suspended');
+                    }
+                    this.disableActionBtns = false;
+                },
+                err => {
+                    this.getFlowLastError(this.flow.id, 'Pause', err.error);
+                    this.isFlowStatusOK = false;
+                    this.flowStatusError = `Flow with id=${this.flow.id} is not paused.`;
+                    this.disableActionBtns = false;
                 }
-                this.disableActionBtns = false;
-            },
-            err => {
-                this.getFlowLastError(this.flow.id, 'Pause', err.error);
-                this.isFlowStatusOK = false;
-                this.flowStatusError = `Flow with id=${this.flow.id} is not paused.`;
-                this.disableActionBtns = false;
-            }
-        );
+            );
+        } else {
+            this.flowService.pause(this.flow.id).subscribe(
+                response => {
+                    if (response.status === 200) {
+                        // this.setFlowStatus('suspended');
+                    }
+                    this.disableActionBtns = false;
+                },
+                err => {
+                    this.getFlowLastError(this.flow.id, 'Pause', err.error);
+                    this.isFlowStatusOK = false;
+                    this.flowStatusError = `Flow with id=${this.flow.id} is not paused.`;
+                    this.disableActionBtns = false;
+                }
+            );
+        }
     }
 
     resume() {
@@ -663,30 +681,57 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         this.isFlowStatusOK = true;
         this.disableActionBtns = true;
 
-        this.flowService.getConfiguration(this.flow.id).subscribe(
-            data => {
-                this.flowService.setConfiguration(this.flow.id, data.body).subscribe(data2 => {
-                    this.flowService.resume(this.flow.id).subscribe(
-                        response => {
-                            if (response.status === 200) {
-                                // this.setFlowStatus('resumed');
+        if (this.flow.distributed == true) {
+            this.flowService.getConfiguration(this.flow.id).subscribe(
+                data => {
+                    this.flowService.setDistributedConfiguration(this.flow.id, data.body, this.flow.deploymentId).subscribe(data2 => {
+                        this.flowService.distributedResume(this.flow.id, this.flow.deploymentId).subscribe(
+                            response => {
+                                if (response.status === 200) {
+                                    this.setFlowStatus('resumed');
+                                }
+                                this.disableActionBtns = false;
+                            },
+                            err => {
+                                this.getFlowLastError(this.flow.id, 'Resume', err.error);
+                                this.isFlowStatusOK = false;
+                                this.flowStatusError = `Flow with id=${this.flow.id} is not resumed.`;
+                                this.disableActionBtns = false;
                             }
-                            this.disableActionBtns = false;
-                        },
-                        err => {
-                            this.getFlowLastError(this.flow.id, 'Resume', err.error);
-                            this.isFlowStatusOK = false;
-                            this.flowStatusError = `Flow with id=${this.flow.id} is not resumed.`;
-                            this.disableActionBtns = false;
-                        }
-                    );
-                });
-            },
-            err => {
-                this.flowConfigurationNotObtained(this.flow.id);
-                this.disableActionBtns = false;
-            }
-        );
+                        );
+                    });
+                },
+                err => {
+                    this.flowConfigurationNotObtained(this.flow.id);
+                    this.disableActionBtns = false;
+                }
+            );
+        } else {
+            this.flowService.getConfiguration(this.flow.id).subscribe(
+                data => {
+                    this.flowService.setConfiguration(this.flow.id, data.body).subscribe(data2 => {
+                        this.flowService.resume(this.flow.id).subscribe(
+                            response => {
+                                if (response.status === 200) {
+                                    // this.setFlowStatus('resumed');
+                                }
+                                this.disableActionBtns = false;
+                            },
+                            err => {
+                                this.getFlowLastError(this.flow.id, 'Resume', err.error);
+                                this.isFlowStatusOK = false;
+                                this.flowStatusError = `Flow with id=${this.flow.id} is not resumed.`;
+                                this.disableActionBtns = false;
+                            }
+                        );
+                    });
+                },
+                err => {
+                    this.flowConfigurationNotObtained(this.flow.id);
+                    this.disableActionBtns = false;
+                }
+            );
+        }
     }
 
     restart() {
@@ -694,30 +739,57 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         this.isFlowStatusOK = true;
         this.disableActionBtns = true;
 
-        this.flowService.getConfiguration(this.flow.id).subscribe(
-            data => {
-                this.flowService.setConfiguration(this.flow.id, data.body).subscribe(data2 => {
-                    this.flowService.restart(this.flow.id).subscribe(
-                        response => {
-                            if (response.status === 200) {
-                                // this.setFlowStatus('restarted');
+        if (this.flow.distributed == true) {
+            this.flowService.getConfiguration(this.flow.id).subscribe(
+                data => {
+                    this.flowService.setDistributedConfiguration(this.flow.id, data.body, this.flow.deploymentId).subscribe(data2 => {
+                        this.flowService.distributedRestart(this.flow.id, this.flow.deploymentId).subscribe(
+                            response => {
+                                if (response.status === 200) {
+                                    this.setFlowStatus('restarted');
+                                }
+                                this.disableActionBtns = false;
+                            },
+                            err => {
+                                this.getFlowLastError(this.flow.id, 'Restart', err.error);
+                                this.isFlowStatusOK = false;
+                                this.flowStatusError = `Flow with id=${this.flow.id} is not restarted.`;
+                                this.disableActionBtns = false;
                             }
-                            this.disableActionBtns = false;
-                        },
-                        err => {
-                            this.getFlowLastError(this.flow.id, 'Restart', err.error);
-                            this.isFlowStatusOK = false;
-                            this.flowStatusError = `Flow with id=${this.flow.id} is not restarted.`;
-                            this.disableActionBtns = false;
-                        }
-                    );
-                });
-            },
-            err => {
-                this.flowConfigurationNotObtained(this.flow.id);
-                this.disableActionBtns = false;
-            }
-        );
+                        );
+                    });
+                },
+                err => {
+                    this.flowConfigurationNotObtained(this.flow.id);
+                    this.disableActionBtns = false;
+                }
+            );
+        } else {
+            this.flowService.getConfiguration(this.flow.id).subscribe(
+                data => {
+                    this.flowService.setConfiguration(this.flow.id, data.body).subscribe(data2 => {
+                        this.flowService.restart(this.flow.id).subscribe(
+                            response => {
+                                if (response.status === 200) {
+                                    // this.setFlowStatus('restarted');
+                                }
+                                this.disableActionBtns = false;
+                            },
+                            err => {
+                                this.getFlowLastError(this.flow.id, 'Restart', err.error);
+                                this.isFlowStatusOK = false;
+                                this.flowStatusError = `Flow with id=${this.flow.id} is not restarted.`;
+                                this.disableActionBtns = false;
+                            }
+                        );
+                    });
+                },
+                err => {
+                    this.flowConfigurationNotObtained(this.flow.id);
+                    this.disableActionBtns = false;
+                }
+            );
+        }
     }
 
     stop() {
