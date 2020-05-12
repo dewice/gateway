@@ -49,8 +49,8 @@ public class LoadBalancerService {
 	{
 		this.headers.add("Authorization", jwt);
 		HttpEntity<String> get_entity = new HttpEntity<>("parameters", this.headers);
-		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
-//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
+//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
+		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
 		
 		if (serviceInstances.size() < 1)
 		{
@@ -70,16 +70,27 @@ public class LoadBalancerService {
 		
 		else
 		{
-			Map<String, Integer> responseStatusCodes = new HashMap<String, Integer>();
+			Map<String, String> responseStatusCodes = new HashMap<String, String>();
 			
 			for (ServiceInstance instance: serviceInstances)
 			{
 				URI uri = URI.create(String.format("%s%s", instance.getUri(), connectorURL + connectorId + path + id));
 		        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
-		        responseStatusCodes.put(instance.getInstanceId(), response.getStatusCodeValue());
+		        
+		        if (path.equals("/flow/status/"))
+		        {
+					JSONObject object = new JSONObject(response.getBody());
+					String message = object.get("message").toString();
+		        	responseStatusCodes.put(instance.getInstanceId(), message);
+		        }
+		        else
+		        {
+			        responseStatusCodes.put(instance.getInstanceId(), Integer.toString(response.getStatusCodeValue()));
+		        }
+
 			}
-			
-			return responseStatusCodes.toString();
+			JSONObject JSONMap = new JSONObject(responseStatusCodes);
+			return JSONMap.toString();
 		}
 	}
 	
@@ -130,8 +141,8 @@ public class LoadBalancerService {
 		this.headers.add("Authorization", jwt);
 		JSONObject JSONDeploy = new JSONObject(configuration);
 		HttpEntity<String> post_entity = new HttpEntity<>(JSONDeploy.toString(), this.headers);
-		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
-//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
+//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
+		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
 		
 		if (serviceInstances.size() < 1)
 		{

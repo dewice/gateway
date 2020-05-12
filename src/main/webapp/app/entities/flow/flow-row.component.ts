@@ -23,6 +23,7 @@ import { NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 enum Status {
     active = 'active',
+    partiallyActive = 'partiallyActive',
     paused = 'paused',
     inactive = 'inactive',
     inactiveError = 'inactiveError'
@@ -44,6 +45,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
     errorEndpoint: ErrorEndpoint = new ErrorEndpoint();
 
     public isFlowStarted: boolean;
+    public isFlowPartiallyStarted: boolean;
     public isFlowRestarted: boolean;
 
     public isFlowPaused: boolean;
@@ -175,12 +177,25 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
     getDistributedStatus(id: number, deploymentId: number) {
         this.clickButton = true;
-
         this.flowService.getDistributedFlowStatus(id, deploymentId).subscribe(flowStatus => {
-            let jsonResponse = JSON.parse(flowStatus.body);
+            let response = JSON.parse(flowStatus.body);
+            if (this.flow.instances > 1) {
+                let started = 0;
+                let singleMessage;
 
-            if (jsonResponse.message != 'unconfigured') {
-                this.setFlowStatus(jsonResponse.message);
+                for (var key in response) {
+                    if (response[key] == 'started') started++;
+
+                    singleMessage = response[key];
+                }
+
+                if (started < this.flow.instances && started >= 1) this.setFlowStatus('partiallyStarted');
+                else this.setFlowStatus(singleMessage);
+            } else {
+                // let jsonResponse = JSON.parse(flowStatus.body);
+                if (response.message != 'unconfigured') {
+                    this.setFlowStatus(response.message);
+                }
             }
         });
     }
@@ -219,6 +234,16 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                             Last action: Start <br/>
                             Status: Started succesfullly
                         `;
+                break;
+
+            case 'partiallyStarted':
+                this.statusFlow = Status.partiallyActive;
+                this.isFlowPaused = this.isFlowStopped = this.isFlowRestarted = false;
+                this.isFlowPartiallyStarted = this.isFlowResumed = true;
+                this.flowStatusButton = `
+                            Last action: partiallyStart <br/>
+                            Status:  Partially started
+            `;
 
                 break;
             case 'suspended':
