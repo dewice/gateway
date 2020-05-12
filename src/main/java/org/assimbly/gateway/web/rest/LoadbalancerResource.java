@@ -28,35 +28,49 @@ public class LoadbalancerResource {
     public String startFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
-		return lbs.createRequest(jwt, connectorId, id, deploymentId, "/flow/start/");
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/start/");
 	}
 	
 	@GetMapping(path = "/connector/{connectorId}/flow/stop/{id}/deployment/{deploymentId}")
     public String stopFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
-		return lbs.createRequest(jwt, connectorId, id, deploymentId, "/flow/stop/");
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/stop/");
 	}
 
 	@GetMapping(path = "/connector/{connectorId}/flow/pause/{id}/deployment/{deploymentId}")
     public String pauseFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
-		return lbs.createRequest(jwt, connectorId, id, deploymentId, "/flow/pause/");
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/pause/");
 	}
 
 	@GetMapping(path = "/connector/{connectorId}/flow/resume/{id}/deployment/{deploymentId}")
     public String resumeFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
-		return lbs.createRequest(jwt, connectorId, id, deploymentId, "/flow/resume/");
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/resume/");
 	}
 
 	@GetMapping(path = "/connector/{connectorId}/flow/restart/{id}/deployment/{deploymentId}")
     public String restartFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
-		return lbs.createRequest(jwt, connectorId, id, deploymentId, "/flow/restart/");
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/restart/");
 	}
+	
+    @GetMapping(path = "/connector/{connectorId}/flow/status/{id}/deployment/{deploymentId}", produces = {"text/plain","application/xml","application/json"})
+    public String getDistributedFlowStatus
+    (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
+	{
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/status/");
+	}
+	
+//	@GetMapping(path = "/securities/syncTrustore")
+//    public String syncSecurityInTruststoreDistributed
+//    (@RequestHeader("Authorization") String jwt)
+//	{
+//		return lbs.createSecurityRequest(jwt, "/syncTrustore");
+//	}
 	
 }

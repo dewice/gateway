@@ -211,6 +211,13 @@ export class FlowService {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/status/${id}`, { observe: 'response', responseType: 'text' });
     }
 
+    getDistributedFlowStatus(id: number, deploymentId: number): Observable<any> {
+        return this.http.get(`${this.microserviceConnectorUrl}/${this.gatewayid}/flow/status/${id}/deployment/${deploymentId}`, {
+            observe: 'response',
+            responseType: 'text'
+        });
+    }
+
     getFlowAlerts(id: number): Observable<any> {
         return this.http.get(`${this.connectorUrl}/${this.gatewayid}/flow/alerts/${id}`, { observe: 'response', responseType: 'text' });
     }

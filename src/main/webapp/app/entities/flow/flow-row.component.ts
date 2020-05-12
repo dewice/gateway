@@ -118,7 +118,12 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.setFlowStatusDefaults();
-        this.getStatus(this.flow.id);
+
+        if (this.flow.distributed == true) {
+            this.getDistributedStatus(this.flow.id, this.flow.deploymentId);
+        } else {
+            this.getStatus(this.flow.id);
+        }
 
         this.toEndpoints = this.flow.toEndpoints;
         this.getFromEndpoint(this.flow.fromEndpointId);
@@ -166,6 +171,18 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 this.setFlowNumberOfAlerts(flowAlertsNumber.body);
             }
         );
+    }
+
+    getDistributedStatus(id: number, deploymentId: number) {
+        this.clickButton = true;
+
+        this.flowService.getDistributedFlowStatus(id, deploymentId).subscribe(flowStatus => {
+            let jsonResponse = JSON.parse(flowStatus.body);
+
+            if (jsonResponse.message != 'unconfigured') {
+                this.setFlowStatus(jsonResponse.message);
+            }
+        });
     }
 
     setFlowStatusDefaults() {
@@ -591,7 +608,6 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
         this.flowService.getConfiguration(this.flow.id).subscribe(
             data => {
-                console.log(data);
                 if (this.flow.distributed == true) {
                     this.flowService.setDistributedConfiguration(this.flow.id, data.body, this.flow.deploymentId).subscribe(data2 => {
                         this.flowService.distributedStart(this.flow.id, this.flow.deploymentId).subscribe(

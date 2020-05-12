@@ -97,6 +97,16 @@ eclipse {
 
 defaultTasks "bootRun"
 
+// bootRun {
+//    jvmArgs = [
+//        "-Djavax.net.debug=ssl:handshake",
+//        "-Djavax.net.ssl.keyStore=C:/Users/Adbib/.assimbly/security/keystore.jks",
+//        "-Djavax.net.ssl.keyStorePassword=supersecret",
+//        "-Djavax.net.ssl.trustStore=C:/Users/Adbib/.assimbly/security/truststore.jks",
+//        "-Djavax.net.ssl.trustStorePassword=supersecret"
+//     ]
+// }
+
 springBoot {
     mainClassName = 'org.assimbly.gateway.GatewayApp'
 }
