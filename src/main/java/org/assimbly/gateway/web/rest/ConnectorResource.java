@@ -872,7 +872,7 @@ public class ConnectorResource {
 	       			log.info("Autostart flow " + flow.getName() + " with id=" + flow.getId());
 					configuration = assimblyDBConfiguration.convertDBToFlowConfiguration(flow.getId(),"xml/application");
 					
-					if(flow.isDistributed()) {
+//					if(flow.isDistributed()) {
 						// Later bijwerken om meerdere instanties van een flow te supporten
 //						Deployment deployment = flow.getDeployment();
 //						String deploymentName = deployment.getName();
@@ -882,12 +882,12 @@ public class ConnectorResource {
 //						System.out.println("\n\n\n\n\n\n\n\n\n");
 //						System.out.println(isStarted);
 //						System.out.println("\n\n\n\n\n\n\n\n\n");
-					}
+//					}
 					
-					else {
-						connector.setFlowConfiguration(flow.getId().toString(),"application/xml", configuration);
-						connector.startFlow(flow.getId().toString());
-					}
+
+					connector.setFlowConfiguration(flow.getId().toString(),"application/xml", configuration);
+					connector.startFlow(flow.getId().toString());
+
 	       		}
 	       	}
     	} catch (Exception e) {

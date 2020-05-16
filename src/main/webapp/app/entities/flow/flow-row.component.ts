@@ -189,8 +189,11 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                     singleMessage = response[key];
                 }
 
-                if (started < this.flow.instances && started >= 1) this.setFlowStatus('partiallyStarted');
-                else this.setFlowStatus(singleMessage);
+                if (started < this.flow.instances && started >= 1) {
+                    this.setFlowStatus('partiallyStarted');
+                } else {
+                    this.setFlowStatus(singleMessage);
+                }
             } else {
                 // let jsonResponse = JSON.parse(flowStatus.body);
                 if (response.message != 'unconfigured') {
@@ -637,9 +640,10 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                     this.flowService.setDistributedConfiguration(this.flow.id, data.body, this.flow.deploymentId).subscribe(data2 => {
                         this.flowService.distributedStart(this.flow.id, this.flow.deploymentId).subscribe(
                             response => {
-                                if (response.status === 200) {
-                                    this.setFlowStatus('started');
-                                }
+                                // if (response.status === 200) {
+                                //     this.setFlowStatus('started');
+                                // }
+                                this.getDistributedStatus(this.flow.id, this.flow.deploymentId);
                                 this.disableActionBtns = false;
                             },
                             err => {
@@ -786,9 +790,10 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                     this.flowService.setDistributedConfiguration(this.flow.id, data.body, this.flow.deploymentId).subscribe(data2 => {
                         this.flowService.distributedRestart(this.flow.id, this.flow.deploymentId).subscribe(
                             response => {
-                                if (response.status === 200) {
-                                    this.setFlowStatus('restarted');
-                                }
+                                // if (response.status === 200) {
+                                //     this.setFlowStatus('restarted');
+                                // }
+                                this.getDistributedStatus(this.flow.id, this.flow.deploymentId);
                                 this.disableActionBtns = false;
                             },
                             err => {

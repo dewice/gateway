@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assimbly.gateway.repository.FlowRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -30,16 +31,16 @@ public class LoadBalancerService {
 	private final String connectorURL = "/api/connector/";
 //	private final String securityURL = "/api/securities";
 	private final String depName;
-	private HttpHeaders headers;
+	private int flowInstances = 0;
 	
 	@Autowired
 	RestTemplate restTemplate;
 	
+	@Autowired
+	FlowRepository flowRepository;
+	
     public LoadBalancerService(DiscoveryClient discoveryClient, Environment env) {
     	this.discoveryClient = discoveryClient;
-		this.headers = new HttpHeaders();
-		this.headers.setContentType(MediaType.APPLICATION_JSON);
-		this.headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		this.environment = env;
 		this.depName = environment.getProperty("application.cluster.deploymentName");
     }
@@ -47,10 +48,15 @@ public class LoadBalancerService {
 	// Method for creating Connector Get-requests to given Connector paths
 	public String createConnectorRequest(String jwt, Long connectorId, Long id, Long deploymentId, String path)
 	{
-		this.headers.add("Authorization", jwt);
-		HttpEntity<String> get_entity = new HttpEntity<>("parameters", this.headers);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		headers.add("Authorization", jwt);
+		HttpEntity<String> get_entity = new HttpEntity<>(headers);
+		
 //		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
 		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
+		flowRepository.findById(id).ifPresent(x -> this.flowInstances = x.getInstances());
 		
 		if (serviceInstances.size() < 1)
 		{
@@ -59,13 +65,21 @@ public class LoadBalancerService {
 			);
 		}
 		
-		else if (serviceInstances.size() == 1)
+		else if (serviceInstances.size() == 1 && this.flowInstances == 1)
 		{
 			ServiceInstance instance = serviceInstances.get(0);
 			URI uri = URI.create(String.format("%s%s", instance.getUri(), connectorURL + connectorId + path + id));
-			ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
 			
-			return response.getBody();
+			try {
+				ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
+				
+				return response.getBody();
+			
+			} catch(Exception e) {
+				e.printStackTrace();
+				
+				return "error occured";
+			}
 		}
 		
 		else
@@ -75,19 +89,25 @@ public class LoadBalancerService {
 			for (ServiceInstance instance: serviceInstances)
 			{
 				URI uri = URI.create(String.format("%s%s", instance.getUri(), connectorURL + connectorId + path + id));
-		        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
-		        
-		        if (path.equals("/flow/status/"))
-		        {
-					JSONObject object = new JSONObject(response.getBody());
-					String message = object.get("message").toString();
-		        	responseStatusCodes.put(instance.getInstanceId(), message);
-		        }
-		        else
-		        {
-			        responseStatusCodes.put(instance.getInstanceId(), Integer.toString(response.getStatusCodeValue()));
-		        }
-
+				
+				try {
+			        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
+			        
+			        if (path.equals("/flow/status/"))
+			        {
+						JSONObject object = new JSONObject(response.getBody());
+						String message = object.get("message").toString();
+			        	responseStatusCodes.put(instance.getInstanceId(), message);
+			        }
+			        else
+			        {
+				        responseStatusCodes.put(instance.getInstanceId(), Integer.toString(response.getStatusCodeValue()));
+			        }
+					
+				} catch(Exception e)
+				{
+					e.printStackTrace();
+				}
 			}
 			JSONObject JSONMap = new JSONObject(responseStatusCodes);
 			return JSONMap.toString();
@@ -138,9 +158,12 @@ public class LoadBalancerService {
     public String setDistributedFlowConfiguration
     (String configuration, String jwt, Long connectorId, Long id, @PathVariable Long deploymentId)
 	{
-		this.headers.add("Authorization", jwt);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		headers.add("Authorization", jwt);
 		JSONObject JSONDeploy = new JSONObject(configuration);
-		HttpEntity<String> post_entity = new HttpEntity<>(JSONDeploy.toString(), this.headers);
+		HttpEntity<String> post_entity = new HttpEntity<>(JSONDeploy.toString(), headers);
 //		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
 		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
 		

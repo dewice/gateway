@@ -24,42 +24,42 @@ public class LoadbalancerResource {
 		return lbs.setDistributedFlowConfiguration(configuration, jwt, connectorId, id, deploymentId);
     }
 	
-	@GetMapping(path = "/connector/{connectorId}/flow/start/{id}/deployment/{deploymentId}")
+	@GetMapping(path = "/connector/{connectorId}/flow/start/{id}/deployment/{deploymentId}", produces = "application/json")
     public String startFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/start/");
 	}
 	
-	@GetMapping(path = "/connector/{connectorId}/flow/stop/{id}/deployment/{deploymentId}")
+	@GetMapping(path = "/connector/{connectorId}/flow/stop/{id}/deployment/{deploymentId}", produces = "application/json")
     public String stopFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/stop/");
 	}
 
-	@GetMapping(path = "/connector/{connectorId}/flow/pause/{id}/deployment/{deploymentId}")
+	@GetMapping(path = "/connector/{connectorId}/flow/pause/{id}/deployment/{deploymentId}", produces = "application/json")
     public String pauseFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/pause/");
 	}
 
-	@GetMapping(path = "/connector/{connectorId}/flow/resume/{id}/deployment/{deploymentId}")
+	@GetMapping(path = "/connector/{connectorId}/flow/resume/{id}/deployment/{deploymentId}", produces = "application/json")
     public String resumeFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/resume/");
 	}
 
-	@GetMapping(path = "/connector/{connectorId}/flow/restart/{id}/deployment/{deploymentId}")
+	@GetMapping(path = "/connector/{connectorId}/flow/restart/{id}/deployment/{deploymentId}", produces = "application/json")
     public String restartFlowDistributed
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/restart/");
 	}
 	
-    @GetMapping(path = "/connector/{connectorId}/flow/status/{id}/deployment/{deploymentId}", produces = {"text/plain","application/xml","application/json"})
+    @GetMapping(path = "/connector/{connectorId}/flow/status/{id}/deployment/{deploymentId}", produces = "application/json")
     public String getDistributedFlowStatus
     (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
 	{
