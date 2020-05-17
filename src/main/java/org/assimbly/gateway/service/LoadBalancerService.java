@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assimbly.gateway.domain.Flow;
 import org.assimbly.gateway.repository.FlowRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ public class LoadBalancerService {
 	private final String connectorURL = "/api/connector/";
 //	private final String securityURL = "/api/securities";
 	private final String depName;
-	private int flowInstances = 0;
 	
 	@Autowired
 	RestTemplate restTemplate;
@@ -53,10 +53,16 @@ public class LoadBalancerService {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("Authorization", jwt);
 		HttpEntity<String> get_entity = new HttpEntity<>(headers);
+		int flowInstances = 0;
 		
 //		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
 		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
-		flowRepository.findById(id).ifPresent(x -> this.flowInstances = x.getInstances());
+		
+		if(flowRepository.findById(id).isPresent())
+		{
+			Flow flow = flowRepository.findById(id).get();
+			flowInstances = flow.getInstances();
+		}
 		
 		if (serviceInstances.size() < 1)
 		{
@@ -65,21 +71,15 @@ public class LoadBalancerService {
 			);
 		}
 		
-		else if (serviceInstances.size() == 1 && this.flowInstances == 1)
+		else if (serviceInstances.size() == 1 && flowInstances == 1)
 		{
 			ServiceInstance instance = serviceInstances.get(0);
 			URI uri = URI.create(String.format("%s%s", instance.getUri(), connectorURL + connectorId + path + id));
 			
-			try {
-				ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
+
+			ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
 				
-				return response.getBody();
-			
-			} catch(Exception e) {
-				e.printStackTrace();
-				
-				return "error occured";
-			}
+			return response.getBody();
 		}
 		
 		else
@@ -90,7 +90,7 @@ public class LoadBalancerService {
 			{
 				URI uri = URI.create(String.format("%s%s", instance.getUri(), connectorURL + connectorId + path + id));
 				
-				try {
+
 			        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
 			        
 			        if (path.equals("/flow/status/"))
@@ -103,13 +103,10 @@ public class LoadBalancerService {
 			        {
 				        responseStatusCodes.put(instance.getInstanceId(), Integer.toString(response.getStatusCodeValue()));
 			        }
-					
-				} catch(Exception e)
-				{
-					e.printStackTrace();
-				}
 			}
+			
 			JSONObject JSONMap = new JSONObject(responseStatusCodes);
+			
 			return JSONMap.toString();
 		}
 	}
