@@ -124,7 +124,12 @@
 						</div>
 						<div *ngIf="flow.loadBalancing == true" class="form-group w-25">
 							<label class="form-control-label" for="field_instances">Instances</label>
-							<input type="number" min="1" [max]="maximumInstances" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
+							<input type="number" min="1" numbersOnly [max]="maximumInstances" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
+						</div>
+						<div *ngIf="editFlowForm['controls'].instances.errors && (editFlowForm['controls'].instances.dirty || editFlowForm['controls'].instances.touched)">
+							<div *ngIf="editFlowForm['controls'].instances.errors.required || editFlowForm['controls'].instances.errors.max || editFlowForm['controls'].instances.errors.min" class="invalid-field-message">
+								Instances must be a number between 1 and {{ maximumInstances }}
+							</div>
 						</div>
 						<div class="form-group" *ngIf="!singleGateway">
 							<label class="form-control-label" for="field_gateway">Gateway</label>

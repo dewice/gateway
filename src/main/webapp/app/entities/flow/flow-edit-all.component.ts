@@ -130,12 +130,12 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     closeResult: string;
 
     errorSetHeader = false;
+    maximumInstances: number;
 
     private subscription: Subscription;
     private eventSubscriber: Subscription;
     private wikiDocUrl: string;
     private camelDocUrl: string;
-    private maximumInstances: number;
 
     modalRef: NgbModalRef | null;
 
@@ -592,7 +592,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             logLevel: new FormControl(flow.logLevel),
             distributed: new FormControl({ value: flow.distributed, disabled: !this.clusterStatus }),
             loadBalancing: new FormControl(flow.loadBalancing),
-            instances: new FormControl(flow.instances, Validators.max(this.maximumInstances)),
+            instances: new FormControl(flow.instances, [Validators.required, Validators.max(this.maximumInstances), Validators.min(1)]),
             gateway: new FormControl(flow.gatewayId),
             endpointsData: new FormArray([])
         });

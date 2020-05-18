@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, ErrorHandler } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { OnlynumberDirective } from './onlynumber.directive';
 import { PopoverModule } from 'ngx-bootstrap';
 import { GatewaySharedModule } from '../../shared';
 import { GatewayFromEndpointModule } from '../../entities/from-endpoint/from-endpoint.module';
@@ -62,7 +62,8 @@ const ENTITY_STATES = [...flowRoute, ...flowPopupRoute];
         FlowDeletePopupComponent,
         FlowConfigurationComponent,
         FlowRowComponent,
-        FlowSearchByNamePipe
+        FlowSearchByNamePipe,
+        OnlynumberDirective
     ],
     entryComponents: [
         FlowComponent,
