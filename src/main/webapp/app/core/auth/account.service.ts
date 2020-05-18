@@ -98,7 +98,7 @@ export class AccountService {
     }
 
     checkEureka(): Observable<boolean> {
-        return this.http.get<boolean>(`${this.kubernetesUrl}/checkEureka`);
+        return this.http.get<boolean>(`${this.kubernetesUrl}/checkeureka`);
     }
 
     isEurekaEnabled(): boolean {

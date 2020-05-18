@@ -244,7 +244,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 this.isFlowPaused = this.isFlowStopped = this.isFlowRestarted = false;
                 this.isFlowPartiallyStarted = this.isFlowResumed = true;
                 this.flowStatusButton = `
-                            Last action: partiallyStart <br/>
+                            Last action: Start <br/>
                             Status:  Partially started
             `;
 

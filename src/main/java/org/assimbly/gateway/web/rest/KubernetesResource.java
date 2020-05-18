@@ -29,14 +29,19 @@ public class KubernetesResource {
 		fs.findById(Long.parseLong(id)).ifPresent(x -> {x.setDeployment(deployment); fs.save(x); });
 	}
 	
-	@GetMapping(path = "/kubernetes/checkCluster", produces = "application/json")
+	@GetMapping(path = "/kubernetes/checkcluster", produces = "application/json")
 	public boolean checkCluster() {
 		return ks.checkCluster();
 	}
 	
-	@GetMapping(path = "/kubernetes/checkEureka", produces = "application/json")
+	@GetMapping(path = "/kubernetes/checkeureka", produces = "application/json")
 	public boolean checkEureka() {
 		return ks.checkEureka();
+	}
+	
+	@GetMapping(path = "/kubernetes/getmaximuminstances", produces = "application/json")
+	public int getMaximumInstances() {
+		return ks.getMaximumInstances();
 	}
 	
 	@DeleteMapping(path = "/kubernetes/deleteDeployment/{id}", produces = "application/json")

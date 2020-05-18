@@ -135,7 +135,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     private eventSubscriber: Subscription;
     private wikiDocUrl: string;
     private camelDocUrl: string;
-    private deployConfig: any;
+    private maximumInstances: number;
 
     modalRef: NgbModalRef | null;
 
@@ -176,7 +176,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                 this.load(params['id']);
             }
         });
-
+        this.getMaximumInstances();
         this.registerChangeInFlows();
     }
 
@@ -395,6 +395,12 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         return this.accountService.isEurekaEnabled();
     }
 
+    getMaximumInstances() {
+        this.flowService.getMaximumInstances().subscribe(instances => {
+            this.maximumInstances = instances;
+        });
+    }
+
     clone() {
         //reset id and flow name to null
         this.flow.id = null;
@@ -586,7 +592,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
             logLevel: new FormControl(flow.logLevel),
             distributed: new FormControl({ value: flow.distributed, disabled: !this.clusterStatus }),
             loadBalancing: new FormControl(flow.loadBalancing),
-            instances: new FormControl(flow.instances),
+            instances: new FormControl(flow.instances, Validators.max(this.maximumInstances)),
             gateway: new FormControl(flow.gatewayId),
             endpointsData: new FormArray([])
         });

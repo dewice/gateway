@@ -38,6 +38,7 @@ public class KubernetesService {
 	private final String depName;
 	private final String depUrl;
 	private final boolean eureka;
+	private final int maximumInstances;
 	private boolean needsSaving;
 	
 	public KubernetesService(Environment env) {
@@ -45,6 +46,7 @@ public class KubernetesService {
 		this.depName = environment.getProperty("application.cluster.deploymentName");
 		this.depUrl = environment.getProperty("application.cluster.deploymentUrl");
 		this.eureka = Boolean.parseBoolean(environment.getProperty("eureka.client.enabled"));
+		this.maximumInstances = Integer.parseInt(environment.getProperty("application.cluster.maximum-instances"));
 		
 		this.headers = new HttpHeaders();
 		this.headers.setContentType(MediaType.APPLICATION_JSON);
@@ -193,5 +195,8 @@ public class KubernetesService {
 		return this.eureka;
 	}
 	
+	public int getMaximumInstances() {
+		return this.maximumInstances;
+	}
 }
 

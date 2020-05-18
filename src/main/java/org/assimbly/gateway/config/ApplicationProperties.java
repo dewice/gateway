@@ -96,6 +96,7 @@ public class ApplicationProperties {
     	
 		private String deploymentName;
     	private String deploymentUrl;
+    	private int maximumInstances;
     	
     	
     	public String getDeploymentname() {
@@ -112,6 +113,14 @@ public class ApplicationProperties {
 		
 		public void setDeploymenturl(String deploymenturl) {
 			this.deploymentUrl = deploymenturl;
+		}
+
+		public int getMaximumInstances() {
+			return maximumInstances;
+		}
+
+		public void setMaximumInstances(int maximumInstances) {
+			this.maximumInstances = maximumInstances;
 		}
     }
 }

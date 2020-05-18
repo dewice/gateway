@@ -73,7 +73,11 @@ export class FlowService {
     // }
 
     checkCluster(): Observable<boolean> {
-        return this.http.get<boolean>(`${this.kubernetesUrl}/checkCluster`);
+        return this.http.get<boolean>(`${this.kubernetesUrl}/checkcluster`);
+    }
+
+    getMaximumInstances(): Observable<number> {
+        return this.http.get<number>(`${this.kubernetesUrl}/getmaximuminstances`);
     }
 
     update(flow: IFlow): Observable<EntityResponseType> {
