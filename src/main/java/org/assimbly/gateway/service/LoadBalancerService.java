@@ -91,18 +91,33 @@ public class LoadBalancerService {
 				URI uri = URI.create(String.format("%s%s", instance.getUri(), connectorURL + connectorId + path + id));
 				
 
-			        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
-			        
-			        if (path.equals("/flow/status/"))
-			        {
-						JSONObject object = new JSONObject(response.getBody());
-						String message = object.get("message").toString();
-			        	responseStatusCodes.put(instance.getInstanceId(), message);
-			        }
-			        else
-			        {
-				        responseStatusCodes.put(instance.getInstanceId(), Integer.toString(response.getStatusCodeValue()));
-			        }
+		        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
+		        
+		        if (path.equals("/flow/status/"))
+		        {
+					JSONObject object = new JSONObject(response.getBody());
+					String message = object.get("message").toString();
+		        	responseStatusCodes.put(instance.getInstanceId(), message);
+		        }
+		        
+		        else if (path.equals("/flow/stats/"))
+		        {
+		        	if (!(response.getBody().equals("0")))
+		        	{
+			        	JSONObject object = new JSONObject(response.getBody());
+			        	responseStatusCodes.put(instance.getInstanceId(), object.toString());
+		        	}
+		        	else
+		        	{
+			        	responseStatusCodes.put(instance.getInstanceId(), response.getBody());
+		        	}
+
+		        }
+		        
+		        else
+		        {
+			        responseStatusCodes.put(instance.getInstanceId(), Integer.toString(response.getStatusCodeValue()));
+		        }
 			}
 			
 			JSONObject JSONMap = new JSONObject(responseStatusCodes);

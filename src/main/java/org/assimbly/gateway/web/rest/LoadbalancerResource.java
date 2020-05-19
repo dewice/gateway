@@ -66,6 +66,12 @@ public class LoadbalancerResource {
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/status/");
 	}
 	
+    @GetMapping(path = "/connector/{connectorId}/flow/stats/{id}/deployment/{deploymentId}", produces = "application/json")
+    public String getDistributedFlowStats
+    (@RequestHeader("Authorization") String jwt, @PathVariable Long connectorId, @PathVariable Long id, @PathVariable Long deploymentId)
+	{
+		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/stats/");
+	}
 //	@GetMapping(path = "/securities/syncTrustore")
 //    public String syncSecurityInTruststoreDistributed
 //    (@RequestHeader("Authorization") String jwt)

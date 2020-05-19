@@ -78,6 +78,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
     flowRowID: string;
     flowRowErrorEndpointID: string;
+    startedInstances: number;
 
     intervalTime: any;
 
@@ -190,6 +191,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 }
 
                 if (started < this.flow.instances && started >= 1) {
+                    this.startedInstances = started;
                     this.setFlowStatus('partiallyStarted');
                 } else {
                     this.setFlowStatus(singleMessage);
@@ -245,7 +247,8 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 this.isFlowPartiallyStarted = this.isFlowResumed = true;
                 this.flowStatusButton = `
                             Last action: Start <br/>
-                            Status:  Partially started
+                            Status:  Partially started <br/>
+                            Instances started: ${this.startedInstances} out of ${this.flow.instances}
             `;
 
                 break;
@@ -420,9 +423,38 @@ export class FlowRowComponent implements OnInit, OnDestroy {
     }
 
     getFlowStats(id: number) {
-        this.flowService.getFlowStats(id, this.flow.gatewayId).subscribe(res => {
-            this.setFlowStatistic(res.body);
-        });
+        if (this.flow.distributed == true) {
+            this.flowService.getDistributedFlowStats(id, this.flow.gatewayId, this.flow.deploymentId).subscribe(res => {
+                let response = JSON.parse(res.body);
+                if (this.flow.instances > 1) {
+                    let notStarted = 0;
+
+                    for (var key in response) {
+                        if (response[key] == '0') notStarted++;
+                    }
+
+                    if (notStarted == this.flow.instances) {
+                        this.setFlowStatistic(0);
+                    } else {
+                        this.setFlowStatistic(response);
+                    }
+                } else {
+                    console.log(response);
+                    this.setFlowStatistic(response);
+                    // Wanneer enkele gedistribueerde instantie
+
+                    // let jsonResponse = JSON.parse(flowStatus.body);
+                    // if (response.message != 'unconfigured') {
+                    //     this.setFlowStatus(response.message);
+                    // }
+                }
+            });
+        } else {
+            this.flowService.getFlowStats(id, this.flow.gatewayId).subscribe(res => {
+                console.log(res);
+                this.setFlowStatistic(res.body);
+            });
+        }
     }
 
     getFlowDetails() {
@@ -468,33 +500,76 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         if (res === 0) {
             this.flowStatistic = `Currently there are no statistics for this flow.`;
         } else {
-            const now = moment(new Date());
-            const start = moment(res.stats.startTimestamp);
-            const flowRuningTime = moment.duration(now.diff(start));
-            const hours = Math.floor(flowRuningTime.asHours());
-            const minutes = flowRuningTime.minutes();
-            const completed = res.stats.exchangesCompleted - res.stats.failuresHandled;
-            const failures = res.stats.exchangesFailed + res.stats.failuresHandled;
-            let processingTime = ``;
+            if (this.flow.instances == 1) {
+                const now = moment(new Date());
+                const start = moment(res.stats.startTimestamp);
+                const flowRuningTime = moment.duration(now.diff(start));
+                const hours = Math.floor(flowRuningTime.asHours());
+                const minutes = flowRuningTime.minutes();
+                const completed = res.stats.exchangesCompleted - res.stats.failuresHandled;
+                const failures = res.stats.exchangesFailed + res.stats.failuresHandled;
+                let processingTime = ``;
 
-            if (res.stats.lastProcessingTime > 0) {
-                processingTime = `<b>Processing time</b><br/>
-                Last: ${res.stats.lastProcessingTime} ms<br/>
-                Min: ${res.stats.minProcessingTime} ms<br/>
-                Max: ${res.stats.maxProcessingTime} ms<br/>
-                Average: ${res.stats.meanProcessingTime} ms<br/>`;
+                if (res.stats.lastProcessingTime > 0) {
+                    processingTime = `<b>Processing time</b><br/>
+                    Last: ${res.stats.lastProcessingTime} ms<br/>
+                    Min: ${res.stats.minProcessingTime} ms<br/>
+                    Max: ${res.stats.maxProcessingTime} ms<br/>
+                    Average: ${res.stats.meanProcessingTime} ms<br/>`;
+                }
+
+                this.flowStatistic =
+                    `
+                    <br/>
+                    <b>Start time:</b> ${this.checkDate(res.stats.startTimestamp)}<br/>
+                    <b>Run time:</b> ${hours} hours ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} <br/><br/>
+                    <b>First:</b> ${this.checkDate(res.stats.firstExchangeCompletedTimestamp)}<br/>
+                    <b>Last:</b> ${this.checkDate(res.stats.lastExchangeCompletedTimestamp)}<br/><br/>
+                    <b>Completed:</b> ${completed}<br/>
+                    <b>Failed:</b> ${failures}<br/>
+                    <br/>` + processingTime;
+            } else {
+                this.flowStatistic = '';
+
+                for (var key in res) {
+                    if (res[key] == '0') {
+                        this.flowStatistic += `<b>Connector instance:</b> ${key}<br/> Currently there are no statistics for this flow.<br/><br/>`;
+                    } else {
+                        let jsonBody = JSON.parse(res[key]);
+
+                        const now = moment(new Date());
+                        const start = moment(jsonBody.stats.startTimestamp);
+                        const flowRuningTime = moment.duration(now.diff(start));
+                        const hours = Math.floor(flowRuningTime.asHours());
+                        const minutes = flowRuningTime.minutes();
+                        const completed = jsonBody.stats.exchangesCompleted - jsonBody.stats.failuresHandled;
+                        const failures = jsonBody.stats.exchangesFailed + jsonBody.stats.failuresHandled;
+                        let processingTime = ``;
+
+                        if (jsonBody.stats.lastProcessingTime > 0) {
+                            processingTime = `<b>Processing time</b><br/>
+                            Last: ${jsonBody.stats.lastProcessingTime} ms<br/>
+                            Min: ${jsonBody.stats.minProcessingTime} ms<br/>
+                            Max: ${jsonBody.stats.maxProcessingTime} ms<br/>
+                            Average: ${jsonBody.stats.meanProcessingTime} ms<br/>`;
+                        }
+
+                        this.flowStatistic +=
+                            `
+                            <b>Connector instance:</b> ${key}<br/></br>
+                            <b>Start time:</b> ${this.checkDate(jsonBody.stats.startTimestamp)}<br/>
+                            <b>Run time:</b> ${hours} hours ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} <br/>
+                            <b>First:</b> ${this.checkDate(jsonBody.stats.firstExchangeCompletedTimestamp)}<br/>
+                            <b>Last:</b> ${this.checkDate(jsonBody.stats.lastExchangeCompletedTimestamp)}<br/>
+                            <b>Completed:</b> ${completed}<br/>
+                            <b>Failed:</b> ${failures}<br/>
+                            <br/>` +
+                            processingTime +
+                            `<br/>`;
+                    }
+                }
+                // this.flowStatistic = `Currently there are no statistics for this flow.`;
             }
-
-            this.flowStatistic =
-                `
-                <br/>
-                <b>Start time:</b> ${this.checkDate(res.stats.startTimestamp)}<br/>
-                <b>Run time:</b> ${hours} hours ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} <br/><br/>
-                <b>First:</b> ${this.checkDate(res.stats.firstExchangeCompletedTimestamp)}<br/>
-                <b>Last:</b> ${this.checkDate(res.stats.lastExchangeCompletedTimestamp)}<br/><br/>
-                <b>Completed:</b> ${completed}<br/>
-                <b>Failed:</b> ${failures}<br/>
-                <br/>` + processingTime;
         }
     }
 
