@@ -56,10 +56,16 @@
 					(mouseenter)="getFlowDetails()" triggers="mouseenter:mouseleave"
 					placement="right"
 					popoverTitle="Details" [popover]="detailsTemplate"></i>
-				<i  style="padding-left: 1em" (mouseenter)="getFlowStats(flow.id)" data-container="body"
+				<i  style="padding-left: 1em" (mouseenter)="getFlowStats(flow.id, selectedInstance)" data-container="body"
 					[hidden]="!isFlowStatusOK" triggers="mouseenter:mouseleave"
 					placement="right" popoverTitle="Stats" [popover]="statsTemplate"
-					class="fa fa-bar-chart"></i>
+					class="fa fa-bar-chart"><a *ngIf="flow.distributed == true && flow.instances > 1">
+						<select (change)="getFlowStats(flow.id, selectElem.value)" #selectElem>
+							<option *ngFor="let instance of instances" [ngValue]="instance" >{{ instance }}</option>
+						</select>
+					</a>
+				</i>
+				<!-- <a class="fa fa-bar-chart" *ngIf="flow.distributed == true"></a> -->
 				 <i [hidden]="isFlowStatusOK" style="padding-left: 1em"
 					placement="right"
 					triggers="mouseenter:mouseleave"

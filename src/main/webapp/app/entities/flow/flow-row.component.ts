@@ -93,6 +93,8 @@ export class FlowRowComponent implements OnInit, OnDestroy {
     private subscription: Subscription;
 
     modalRef: NgbModalRef | null;
+    instances: Array<string>;
+    selectedInstance: string;
 
     constructor(
         private flowService: FlowService,
@@ -121,6 +123,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.setFlowStatusDefaults();
+        this.getFlowStats(this.flow.id);
 
         if (this.flow.distributed == true) {
             this.getDistributedStatus(this.flow.id, this.flow.deploymentId);
@@ -422,21 +425,28 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         }
     }
 
-    getFlowStats(id: number) {
+    setSelectedInstance(instance: string) {
+        this.selectedInstance = instance;
+    }
+
+    getFlowStats(id: number, option?: string) {
+        this.setSelectedInstance(option);
+
         if (this.flow.distributed == true) {
             this.flowService.getDistributedFlowStats(id, this.flow.gatewayId, this.flow.deploymentId).subscribe(res => {
                 let response = JSON.parse(res.body);
                 if (this.flow.instances > 1) {
                     let notStarted = 0;
-
+                    this.instances = [];
                     for (var key in response) {
+                        this.instances.push(key);
                         if (response[key] == '0') notStarted++;
                     }
 
                     if (notStarted == this.flow.instances) {
                         this.setFlowStatistic(0);
                     } else {
-                        this.setFlowStatistic(response);
+                        this.setFlowStatistic(response, option);
                     }
                 } else {
                     console.log(response);
@@ -471,7 +481,8 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         `;
     }
 
-    setFlowStatistic(res) {
+    setFlowStatistic(res, option?: string) {
+        console.log(option);
         /* Example Available stats
           * 
           * "maxProcessingTime": 1381,
@@ -530,47 +541,51 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                     <br/>` + processingTime;
             } else {
                 this.flowStatistic = '';
+                if (option == undefined || option == null) {
+                    option = Object.keys(res)[0];
+                }
+                if (res[option] == '0') {
+                    this.flowStatistic += `<b>Connector instance:</b> ${option}<br/> Currently there are no statistics for this flow.<br/><br/>`;
+                } else {
+                    let jsonBody = JSON.parse(res[option]);
 
-                for (var key in res) {
-                    if (res[key] == '0') {
-                        this.flowStatistic += `<b>Connector instance:</b> ${key}<br/> Currently there are no statistics for this flow.<br/><br/>`;
-                    } else {
-                        let jsonBody = JSON.parse(res[key]);
+                    const now = moment(new Date());
+                    const start = moment(jsonBody.stats.startTimestamp);
+                    const flowRuningTime = moment.duration(now.diff(start));
+                    const hours = Math.floor(flowRuningTime.asHours());
+                    const minutes = flowRuningTime.minutes();
+                    const completed = jsonBody.stats.exchangesCompleted - jsonBody.stats.failuresHandled;
+                    const failures = jsonBody.stats.exchangesFailed + jsonBody.stats.failuresHandled;
+                    let processingTime = ``;
 
-                        const now = moment(new Date());
-                        const start = moment(jsonBody.stats.startTimestamp);
-                        const flowRuningTime = moment.duration(now.diff(start));
-                        const hours = Math.floor(flowRuningTime.asHours());
-                        const minutes = flowRuningTime.minutes();
-                        const completed = jsonBody.stats.exchangesCompleted - jsonBody.stats.failuresHandled;
-                        const failures = jsonBody.stats.exchangesFailed + jsonBody.stats.failuresHandled;
-                        let processingTime = ``;
-
-                        if (jsonBody.stats.lastProcessingTime > 0) {
-                            processingTime = `<b>Processing time</b><br/>
-                            Last: ${jsonBody.stats.lastProcessingTime} ms<br/>
-                            Min: ${jsonBody.stats.minProcessingTime} ms<br/>
-                            Max: ${jsonBody.stats.maxProcessingTime} ms<br/>
-                            Average: ${jsonBody.stats.meanProcessingTime} ms<br/>`;
-                        }
-
-                        this.flowStatistic +=
-                            `
-                            <b>Connector instance:</b> ${key}<br/></br>
-                            <b>Start time:</b> ${this.checkDate(jsonBody.stats.startTimestamp)}<br/>
-                            <b>Run time:</b> ${hours} hours ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} <br/>
-                            <b>First:</b> ${this.checkDate(jsonBody.stats.firstExchangeCompletedTimestamp)}<br/>
-                            <b>Last:</b> ${this.checkDate(jsonBody.stats.lastExchangeCompletedTimestamp)}<br/>
-                            <b>Completed:</b> ${completed}<br/>
-                            <b>Failed:</b> ${failures}<br/>
-                            <br/>` +
-                            processingTime +
-                            `<br/>`;
+                    if (jsonBody.stats.lastProcessingTime > 0) {
+                        processingTime = `<b>Processing time</b><br/>
+                        Last: ${jsonBody.stats.lastProcessingTime} ms<br/>
+                        Min: ${jsonBody.stats.minProcessingTime} ms<br/>
+                        Max: ${jsonBody.stats.maxProcessingTime} ms<br/>
+                        Average: ${jsonBody.stats.meanProcessingTime} ms<br/>`;
                     }
+
+                    this.flowStatistic +=
+                        `
+                        <b>Connector instance:</b> ${option}<br/></br>
+                        <b>Start time:</b> ${this.checkDate(jsonBody.stats.startTimestamp)}<br/>
+                        <b>Run time:</b> ${hours} hours ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} <br/>
+                        <b>First:</b> ${this.checkDate(jsonBody.stats.firstExchangeCompletedTimestamp)}<br/>
+                        <b>Last:</b> ${this.checkDate(jsonBody.stats.lastExchangeCompletedTimestamp)}<br/>
+                        <b>Completed:</b> ${completed}<br/>
+                        <b>Failed:</b> ${failures}<br/>
+                        <br/>` +
+                        processingTime +
+                        `<br/>`;
                 }
                 // this.flowStatistic = `Currently there are no statistics for this flow.`;
             }
         }
+    }
+
+    printSomething() {
+        console.log('Helloworld');
     }
 
     checkDate(r) {
