@@ -123,7 +123,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.setFlowStatusDefaults();
-        this.getFlowStats(this.flow.id);
+        this.getInstances(this.flow.id);
 
         if (this.flow.distributed == true) {
             this.getDistributedStatus(this.flow.id, this.flow.deploymentId);
@@ -425,6 +425,16 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         }
     }
 
+    getInstances(id: number) {
+        this.flowService.getDistributedFlowStats(id, this.flow.gatewayId, this.flow.deploymentId).subscribe(res => {
+            let response = JSON.parse(res.body);
+            this.instances = [];
+            for (var key in response) {
+                this.instances.push(key);
+            }
+        });
+    }
+
     setSelectedInstance(instance: string) {
         this.selectedInstance = instance;
     }
@@ -438,6 +448,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 if (this.flow.instances > 1) {
                     let notStarted = 0;
                     this.instances = [];
+
                     for (var key in response) {
                         this.instances.push(key);
                         if (response[key] == '0') notStarted++;
@@ -449,19 +460,11 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                         this.setFlowStatistic(response, option);
                     }
                 } else {
-                    console.log(response);
                     this.setFlowStatistic(response);
-                    // Wanneer enkele gedistribueerde instantie
-
-                    // let jsonResponse = JSON.parse(flowStatus.body);
-                    // if (response.message != 'unconfigured') {
-                    //     this.setFlowStatus(response.message);
-                    // }
                 }
             });
         } else {
             this.flowService.getFlowStats(id, this.flow.gatewayId).subscribe(res => {
-                console.log(res);
                 this.setFlowStatistic(res.body);
             });
         }
@@ -482,7 +485,6 @@ export class FlowRowComponent implements OnInit, OnDestroy {
     }
 
     setFlowStatistic(res, option?: string) {
-        console.log(option);
         /* Example Available stats
           * 
           * "maxProcessingTime": 1381,
@@ -582,10 +584,6 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                 // this.flowStatistic = `Currently there are no statistics for this flow.`;
             }
         }
-    }
-
-    printSomething() {
-        console.log('Helloworld');
     }
 
     checkDate(r) {
