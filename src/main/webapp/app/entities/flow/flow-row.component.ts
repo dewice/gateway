@@ -439,8 +439,8 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         this.selectedInstance = instance;
     }
 
-    getFlowStats(id: number, option?: string) {
-        this.setSelectedInstance(option);
+    getFlowStats(id: number) {
+        // this.setSelectedInstance(option);
 
         if (this.flow.distributed == true) {
             this.flowService.getDistributedFlowStats(id, this.flow.gatewayId, this.flow.deploymentId).subscribe(res => {
@@ -457,7 +457,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                     if (notStarted == this.flow.instances) {
                         this.setFlowStatistic(0);
                     } else {
-                        this.setFlowStatistic(response, option);
+                        this.setFlowStatistic(response);
                     }
                 } else {
                     this.setFlowStatistic(response);
@@ -484,7 +484,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         `;
     }
 
-    setFlowStatistic(res, option?: string) {
+    setFlowStatistic(res) {
         /* Example Available stats
           * 
           * "maxProcessingTime": 1381,
@@ -543,13 +543,13 @@ export class FlowRowComponent implements OnInit, OnDestroy {
                     <br/>` + processingTime;
             } else {
                 this.flowStatistic = '';
-                if (option == undefined || option == null) {
-                    option = Object.keys(res)[0];
+                if (this.selectedInstance == undefined || this.selectedInstance == null) {
+                    this.selectedInstance = Object.keys(res)[0];
                 }
-                if (res[option] == '0') {
-                    this.flowStatistic += `<b>Connector instance:</b> ${option}<br/> Currently there are no statistics for this flow.<br/><br/>`;
+                if (res[this.selectedInstance] == '0') {
+                    this.flowStatistic += `<b>Connector instance:</b> ${this.selectedInstance}<br/> Currently there are no statistics for this flow.<br/><br/>`;
                 } else {
-                    let jsonBody = JSON.parse(res[option]);
+                    let jsonBody = JSON.parse(res[this.selectedInstance]);
 
                     const now = moment(new Date());
                     const start = moment(jsonBody.stats.startTimestamp);
@@ -570,7 +570,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
                     this.flowStatistic +=
                         `
-                        <b>Connector instance:</b> ${option}<br/></br>
+                        <b>Connector instance:</b> ${this.selectedInstance}<br/></br>
                         <b>Start time:</b> ${this.checkDate(jsonBody.stats.startTimestamp)}<br/>
                         <b>Run time:</b> ${hours} hours ${minutes} ${minutes > 1 ? 'minutes' : 'minute'} <br/>
                         <b>First:</b> ${this.checkDate(jsonBody.stats.firstExchangeCompletedTimestamp)}<br/>
