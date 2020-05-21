@@ -115,22 +115,25 @@
 								<option [ngValue]="false">false</option>
 							</select>
 						</div>
-						<div *ngIf="flow.distributed == true" class="form-group w-25">
+						<div [hidden]="!flow.distributed" class="form-group w-25">
 							<label class="form-control-label" for="field_loadBalancing">LoadBalancing</label>
-							<select type="text" class="form-control" id="field_loadBalancing" *ngIf="flow" [(ngModel)]="flow.loadBalancing" formControlName="loadBalancing">
+							<select type="text" class="form-control" id="field_loadBalancing" *ngIf="flow" formControlName="loadBalancing" [ngModel]="flowLoadbalancing" (ngModelChange)="setLoadbalancing($event)">
 								<option [ngValue]="true">true</option>
 								<option [ngValue]="false">false</option>
 							</select>
 						</div>
-						<div *ngIf="flow.loadBalancing == true" class="form-group w-25">
+						<div [hidden]="!flow.loadBalancing" class="form-group w-25">
 							<label class="form-control-label" for="field_instances">Instances</label>
-							<input type="number" min="1" numbersOnly [max]="maximumInstances" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
+							<input type="number" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
 						</div>
-						<div *ngIf="editFlowForm['controls'].instances.errors && (editFlowForm['controls'].instances.dirty || editFlowForm['controls'].instances.touched)">
-							<div *ngIf="editFlowForm['controls'].instances.errors.required || editFlowForm['controls'].instances.errors.max || editFlowForm['controls'].instances.errors.min" class="invalid-field-message">
-								Instances must be a number between 1 and {{ maximumInstances }}
+						<div *ngIf="editFlowForm['controls'].instances.errors != null">
+							<div *ngIf="editFlowForm['controls'].instances.errors && (editFlowForm['controls'].instances.dirty || editFlowForm['controls'].instances.touched)">
+								<div *ngIf="editFlowForm['controls'].instances.errors.required || editFlowForm['controls'].instances.errors.max || editFlowForm['controls'].instances.errors.min" class="invalid-field-message">
+									Instances must be a number between 1 and {{ maximumInstances }}
+								</div>
 							</div>
 						</div>
+
 						<div class="form-group" *ngIf="!singleGateway">
 							<label class="form-control-label" for="field_gateway">Gateway</label>
 							<select class="form-control" id="field_gateway" *ngIf="flow" formControlName="gateway">

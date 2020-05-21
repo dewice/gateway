@@ -123,9 +123,9 @@ export class FlowRowComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.setFlowStatusDefaults();
-        this.getInstances(this.flow.id);
 
         if (this.flow.distributed == true) {
+            this.getInstances(this.flow.id);
             this.getDistributedStatus(this.flow.id, this.flow.deploymentId);
         } else {
             this.getStatus(this.flow.id);
@@ -440,8 +440,6 @@ export class FlowRowComponent implements OnInit, OnDestroy {
     }
 
     getFlowStats(id: number) {
-        // this.setSelectedInstance(option);
-
         if (this.flow.distributed == true) {
             this.flowService.getDistributedFlowStats(id, this.flow.gatewayId, this.flow.deploymentId).subscribe(res => {
                 let response = JSON.parse(res.body);

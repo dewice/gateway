@@ -181,15 +181,27 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     }
 
     public get flowDistributed() {
-        if (this.flow.distributed == false) {
-            this.flow.loadBalancing = false;
-        }
         return this.flow.distributed;
     }
 
     public setDistributed(bool: boolean) {
         this.flow.distributed = bool;
+        if (this.flow.distributed == false) {
+            this.flow.loadBalancing = false;
+            this.flow.instances = 1;
+        }
+        this.changeDetectorRef.detectChanges();
+    }
 
+    public get flowLoadbalancing() {
+        return this.flow.loadBalancing;
+    }
+
+    public setLoadbalancing(bool: boolean) {
+        this.flow.loadBalancing = bool;
+        if (this.flow.loadBalancing == false) {
+            this.flow.instances = 1;
+        }
         this.changeDetectorRef.detectChanges();
     }
 
@@ -990,10 +1002,6 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                                     this.toEndpoints.forEach(toEndpoint => {
                                         toEndpoint.flowId = this.flow.id;
                                     });
-                                    // this.flowService.createDeployment(this.flow).subscribe(createdDeployment => {
-                                    //     this.deployConfig = createdDeployment;
-                                    //     console.log(this.deployConfig);
-                                    // });
                                     this.toEndpointService.createMultiple(this.toEndpoints).subscribe(
                                         toRes => {
                                             this.toEndpoints = toRes.body;

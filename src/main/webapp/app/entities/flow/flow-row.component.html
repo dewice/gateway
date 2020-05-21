@@ -56,7 +56,7 @@
 					(mouseenter)="getFlowDetails()" triggers="mouseenter:mouseleave"
 					placement="right"
 					popoverTitle="Details" [popover]="detailsTemplate"></i>
-				<i  style="padding-left: 1em" (mouseenter)="getFlowStats(flow.id, selectedInstance)" data-container="body"
+				<i  style="padding-left: 1em" (mouseenter)="getFlowStats(flow.id)" data-container="body"
 					[hidden]="!isFlowStatusOK" triggers="mouseenter:mouseleave"
 					placement="right" popoverTitle="Stats" [popover]="statsTemplate"
 					class="fa fa-bar-chart"><a *ngIf="flow.distributed == true && flow.instances > 1">
