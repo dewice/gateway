@@ -429,6 +429,7 @@ export class FlowRowComponent implements OnInit, OnDestroy {
         this.flowService.getDistributedFlowStats(id, this.flow.gatewayId, this.flow.deploymentId).subscribe(res => {
             let response = JSON.parse(res.body);
             this.instances = [];
+
             for (var key in response) {
                 this.instances.push(key);
             }

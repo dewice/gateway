@@ -46,7 +46,18 @@
 					</ng-template>
 					<ng-template #logLevelPopover let-message="message">
 						<div [innerHtml]="logLevelPopoverMessage"></div>
-					</ng-template>					
+					</ng-template>
+					<ng-template #distributedPopover let-message="message">
+						<div [innerHtml]="distributedPopoverMessage"></div>
+					</ng-template>
+					<ng-template #loadBalancingPopover let-message="message">
+						<div [innerHtml]="loadBalancingPopoverMessage"></div>
+					</ng-template>
+					<ng-template #instancesPopover let-message="message">
+						<div [innerHtml]="instancesPopoverMessage"></div>
+					</ng-template>
+					
+
 					<div class="form-group w-25">
 						<label class="form-control-label" for="field_autostart">Autostart</label>
 						<i triggers="mouseenter:mouseleave"
@@ -110,6 +121,11 @@
 						</div>
 						<div *ngIf="isEurekaEnabled()" class="form-group w-25">
 							<label class="form-control-label" for="field_distributed">Distributed</label>
+							<i  triggers="mouseenter:mouseleave"
+							placement="right" triggers="mouseenter:mouseleave"
+							popoverTitle="Info"
+							 [popover]="distributedPopover" 
+							class="fa fa-info-circle"></i>
 							<select type="text" class="form-control" id="field_distributed" *ngIf="flow" formControlName="distributed" [ngModel]="flowDistributed" (ngModelChange)="setDistributed($event)">
 								<option [ngValue]="true">true</option>
 								<option [ngValue]="false">false</option>
@@ -117,6 +133,11 @@
 						</div>
 						<div [hidden]="!flow.distributed" class="form-group w-25">
 							<label class="form-control-label" for="field_loadBalancing">LoadBalancing</label>
+							<i  triggers="mouseenter:mouseleave"
+							placement="right" triggers="mouseenter:mouseleave"
+							popoverTitle="Info"
+							 [popover]="loadBalancingPopover" 
+							class="fa fa-info-circle"></i>
 							<select type="text" class="form-control" id="field_loadBalancing" *ngIf="flow" formControlName="loadBalancing" [ngModel]="flowLoadbalancing" (ngModelChange)="setLoadbalancing($event)">
 								<option [ngValue]="true">true</option>
 								<option [ngValue]="false">false</option>
@@ -124,7 +145,12 @@
 						</div>
 						<div [hidden]="!flow.loadBalancing" class="form-group w-25">
 							<label class="form-control-label" for="field_instances">Instances</label>
-							<input type="number" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
+							<i  triggers="mouseenter:mouseleave"
+							placement="right" triggers="mouseenter:mouseleave"
+							popoverTitle="Info"
+							 [popover]="instancesPopover" 
+							class="fa fa-info-circle"></i>
+							<input type="number" min="1" [max]="maximumInstances" class="form-control" id="field_instances" *ngIf="flow" formControlName="instances" [(ngModel)]="flow.instances">
 						</div>
 						<div *ngIf="editFlowForm['controls'].instances.errors != null">
 							<div *ngIf="editFlowForm['controls'].instances.errors && (editFlowForm['controls'].instances.dirty || editFlowForm['controls'].instances.touched)">

@@ -1,5 +1,6 @@
 package org.assimbly.gateway.web.rest;
 
+
 import org.assimbly.gateway.service.LoadBalancerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,11 +73,4 @@ public class LoadbalancerResource {
 	{
 		return lbs.createConnectorRequest(jwt, connectorId, id, deploymentId, "/flow/stats/");
 	}
-//	@GetMapping(path = "/securities/syncTrustore")
-//    public String syncSecurityInTruststoreDistributed
-//    (@RequestHeader("Authorization") String jwt)
-//	{
-//		return lbs.createSecurityRequest(jwt, "/syncTrustore");
-//	}
-	
 }

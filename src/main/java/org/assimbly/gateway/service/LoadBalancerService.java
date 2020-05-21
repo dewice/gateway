@@ -30,7 +30,6 @@ public class LoadBalancerService {
     private final DiscoveryClient discoveryClient;
 	private final Environment environment;
 	private final String connectorURL = "/api/connector/";
-//	private final String securityURL = "/api/securities";
 	private final String depName;
 	
 	@Autowired
@@ -55,8 +54,8 @@ public class LoadBalancerService {
 		HttpEntity<String> get_entity = new HttpEntity<>(headers);
 		int flowInstances = 0;
 		
-//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
-		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
+		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
+//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
 		
 		if(flowRepository.findById(id).isPresent())
 		{
@@ -125,47 +124,7 @@ public class LoadBalancerService {
 			return JSONMap.toString();
 		}
 	}
-	
-//	// Method for creating security Get-requests to given security paths for all connector instances
-//	public String createSecurityRequest(String jwt, String path)
-//	{
-//		this.headers.add("Authorization", jwt);
-//		HttpEntity<String> get_entity = new HttpEntity<>("parameters", this.headers);
-//		List<String> serviceIds = this.discoveryClient.getServices();
-//		Map<String, Integer> responseStatusCodes = new HashMap<String, Integer>();
-//		
-//		if (serviceIds.size() < 1)
-//		{
-//			return "No connector instances found";
-//		}
-//		
-//		// Loop through all connector available instances and execute request
-//		for (String serviceId: serviceIds) {
-//			List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(serviceId);
-//			
-//			if (serviceInstances.size() == 1)
-//			{
-//				ServiceInstance instance = serviceInstances.get(0);
-//				URI uri = URI.create(String.format("%s%s", instance.getUri(), securityURL + path));
-//				ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
-//				
-//				responseStatusCodes.put(instance.getInstanceId(), response.getStatusCodeValue());
-//			}
-//			
-//			else if (serviceInstances.size() > 1)
-//			{
-//				for (ServiceInstance instance: serviceInstances)
-//				{
-//					URI uri = URI.create(String.format("%s%s", instance.getUri(), securityURL + path));
-//			        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, get_entity, String.class);
-//			        responseStatusCodes.put(instance.getInstanceId(), response.getStatusCodeValue());
-//				}
-//			}
-//		}
-//		return responseStatusCodes.toString();
-//	}
-	
-	
+
 	// Method for sending distributed flow configurations
     public String setDistributedFlowConfiguration
     (String configuration, String jwt, Long connectorId, Long id, @PathVariable Long deploymentId)
@@ -176,8 +135,8 @@ public class LoadBalancerService {
 		headers.add("Authorization", jwt);
 		JSONObject JSONDeploy = new JSONObject(configuration);
 		HttpEntity<String> post_entity = new HttpEntity<>(JSONDeploy.toString(), headers);
-//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
-		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
+		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances(depName + deploymentId.toString());
+//		List<ServiceInstance> serviceInstances = this.discoveryClient.getInstances("connector");
 		
 		if (serviceInstances.size() < 1)
 		{

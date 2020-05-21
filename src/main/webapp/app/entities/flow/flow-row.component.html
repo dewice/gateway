@@ -59,7 +59,8 @@
 				<i  style="padding-left: 1em" (mouseenter)="getFlowStats(flow.id)" data-container="body"
 					[hidden]="!isFlowStatusOK" triggers="mouseenter:mouseleave"
 					placement="right" popoverTitle="Stats" [popover]="statsTemplate"
-					class="fa fa-bar-chart"><a *ngIf="flow.distributed == true && flow.instances > 1">
+					class="fa fa-bar-chart">
+					<a *ngIf="flow.distributed == true && flow.instances > 1">
 						<select id="selectFlowStats" (change)="setSelectedInstance(selectElem.value)" #selectElem>
 							<option *ngFor="let instance of instances; index as i" value="{{ instance }}">{{ flow.name }} - {{ i + 1 }}</option>
 						</select>

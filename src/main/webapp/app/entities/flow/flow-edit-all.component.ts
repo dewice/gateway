@@ -86,6 +86,9 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     maximumRedeliveriesPopoverMessage: string;
     redeliveryDelayPopoverMessage: string;
     logLevelPopoverMessage: string;
+    distributedPopoverMessage: string;
+    loadBalancingPopoverMessage: string;
+    instancesPopoverMessage: string;
 
     componentPopoverMessage: string;
     optionsPopoverMessage: string;
@@ -167,7 +170,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.isSaving = false;
         this.createRoute = 0;
-        this.setPopoverMessages();
+        // this.setPopoverMessages();
 
         this.subscription = this.route.params.subscribe(params => {
             if (params['clone']) {
@@ -241,7 +244,7 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
                     this.embeddedBroker = true;
                 }
             }
-
+            this.setPopoverMessages();
             if (id) {
                 this.flowService.find(id).subscribe(flow => {
                     if (flow) {
@@ -582,6 +585,11 @@ export class FlowEditAllComponent implements OnInit, OnDestroy {
         this.maximumRedeliveriesPopoverMessage = `The maximum times a messages is redelivered in case of failure.<br/><br/>`;
         this.redeliveryDelayPopoverMessage = `The delay in miliseconds between redeliveries (this delays all messages!)`;
         this.logLevelPopoverMessage = `Sets the log level of flow (default=OFF). This logs incoming and outgoing messages in the flow`;
+        this.distributedPopoverMessage = `If true and a Kubernetes cluster is available, then the flow runs on one or more distributed connector instances. Status cluster: ${
+            this.clusterStatus ? `Available` : 'Unavailable'
+        }`;
+        this.loadBalancingPopoverMessage = `If true then the flow can run on more connector instances.`;
+        this.instancesPopoverMessage = `The amount of connector instances that the flow will run on.`;
         this.componentPopoverMessage = `The Apache Camel scheme to use. Click on the Apache Camel or Assimbly button for online documentation on the selected scheme.`;
         this.optionsPopoverMessage = `Options for the selected component. You can add one or more key/value pairs.<br/><br/>
                                      Click on the Apache Camel button to view documation on the valid options.`;
